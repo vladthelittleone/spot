@@ -1,0 +1,16 @@
+{
+  "plugins": [
+    "node"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:node/recommended"
+  ],
+  "rules": {
+    "no-mixed-spaces-and-tabs": "warn",
+    "node/exports-style": [
+      "error",
+      "module.exports"
+    ]
+  }
+}

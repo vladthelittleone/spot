@@ -1,0 +1,30 @@
+{
+  "session": {
+    "secret": "HustleHardCode",
+    "key": "sid",
+    "rolling": false,
+    "resave": false,
+    "saveUninitialized": false,
+    "cookie": {
+      "path": "/",
+      "httpOnly": true,
+      "maxAge": 86400000
+    }
+  },
+  "database": {
+    "uri": "mongodb://localhost/spot",
+    "testUri": "mongodb://localhost/spotTest",
+    "options": {
+      "server": {
+        "socketOptions": {
+          "keepAlive": 1
+        }
+      }
+    },
+    "debug": false
+  },
+  "server": {
+    "port": 4000,
+    "delay": 86400
+  }
+}
