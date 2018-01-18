@@ -20,11 +20,10 @@ function PassportAuthentication () {
    */
   passport.deserializeUser(async function (obj, done) {
     const user = await User.findOne({'profile.id': obj.profile.id});
-
     done(null, user);
   });
 
   return {
-    github: require('./github')
+    vk: require('./vk')
   };
 }

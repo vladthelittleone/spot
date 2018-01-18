@@ -63,11 +63,8 @@ function expressInitialization () {
 
 function passportInitialization () {
   const strategies = require('./authentication');
-
+  passport.use(strategies.vk);
   // Пример подключения стратегии
-  passport.use(strategies.github);
-  // passport.use(strategies.vk);
-
   app.use(passport.initialize());
   app.use(passport.session());
 }
@@ -81,7 +78,6 @@ function errorHandlersInitialization () {
   });
 
   // error handlers
-
   if (developmentFlag) {
     // development error handler
     // will print stacktrace

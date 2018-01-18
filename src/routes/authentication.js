@@ -16,14 +16,14 @@ module.exports = router;
 
 // Сюда отправляем для старта авторизации через гитхаб.
 router.get(
-  '/github',
-  passport.authenticate('github', {scope: ['user:email']})
+  '/vk',
+  passport.authenticate('vkontakte', {scope: ['user:email']})
 );
 
 // Сюда будет перенаправлять сам гитхаб, после окончания попытки авторизации.
 router.get(
-  '/github/callback',
-  passport.authenticate('github', {failureRedirect: '/'}),
+  '/vk/callback',
+  passport.authenticate('vkontakte', {failureRedirect: '/'}),
   (req, res) => {
     res.redirect('/');
   }

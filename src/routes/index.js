@@ -4,5 +4,5 @@
  * @author Skurishin Vladislav
  */
 module.exports = function (app) {
-  app.use('/api/auth', require('./authentication'));
+  app.use('/api', require('./authentication'));
 };
