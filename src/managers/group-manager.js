@@ -1,8 +1,10 @@
-'use strict';
+"use strict";
+
+const logger = require("../utils/log");
 
 class GroupManager {
   async execute () {
-    // Stub
+    logger.info("Group manager execute.");
   }
 }
 

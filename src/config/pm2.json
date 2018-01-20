@@ -2,7 +2,7 @@
   "apps": [
     {
       "name": "spot",
-      "script": "./src/bin/www",
+      "script": "./src/app.js",
       "watch": true,
       "env": {
         "NODE_ENV": "development",

@@ -11,10 +11,8 @@
       "maxAge": 86400000
     }
   },
-  "vk": {
-    "clientId": "6337746",
-    "clientSecret": "hJ7MnmvOSnV9CWVT7hRs",
-    "callbackUrl": "http://localhost:4000/api/vk/callback"
+  "telegram": {
+    "token": "334807039:AAF9UDVSl2BVdnLPYX4XxeIvZ4bWR_2FCUY"
   },
   "database": {
     "uri": "mongodb://localhost/spot",

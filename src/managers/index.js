@@ -1,15 +1,15 @@
 /**
  * @author Skurishin Vladislav
  */
-const mongoose = require('../utils/mongoose');
-const config = require('../config/index');
+const mongoose = require("../utils/mongoose");
+const config = require("../config/index");
 
-const GroupManager = require('./group-manager');
+const GroupManager = require("./group-manager");
 
 class JobManager {
   static startJobs (delay) {
-    mongoose.connection.on('open', () => {
-      this.start(GroupManager, delay || config.get('server:delay'));
+    mongoose.connection.on("open", () => {
+      this.start(GroupManager, delay || config.get("server:delay"));
     });
   }
 
