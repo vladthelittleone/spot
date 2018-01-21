@@ -8,46 +8,86 @@ const Stage = require("telegraf/stage");
 const WizardScene = require("telegraf/scenes/wizard");
 const Markup = require("telegraf/markup");
 const SpotAPI = require("../api");
+const SpotModel = require("../models/spot");
 
+const config = require("../config");
 const logger = require("../utils/log")(module);
 
 const session = require("telegraf/session");
 const lodash = require("lodash");
 const spots = {};
 
-// TODO вынести в конфиги
-const sports = [
-  "Футбол",
-  "Баскетбол"
-];
+const sportTypes = config.get("sportTypes");
 
 module.exports = (bot) => {
   // Сцена создания нового матча.
-  const create = new WizardScene(
+  const create = createScene();
+
+  // Create scene manager
+  const stage = new Stage();
+
+  // Scene registration
+  stage.register(create);
+
+  bot.use(session());
+  bot.use(stage.middleware());
+
+  bot.action("groups", (ctx) => {
+    SpotModel.getOpenGroups().then((groups) => {
+      ctx.replyWithMarkdown("*=> Список доступных матчей*").then(() => {
+        for (const group of groups) {
+          const {sportType, spotTime, location, price, count, fromId} = group;
+          let str = "";
+          str += `Матч: ${sportType}\n`;
+          str += `Дата проведения: ${spotTime}\n`;
+          str += `Место проведения: ${location}\n`;
+          str += `Цена: ${price}\n`;
+          str += `Необходимо: ${count} человек`;
+          ctx.reply(
+            str,
+            Markup.inlineKeyboard([Markup.callbackButton("Добавиться", fromId)]).extra()
+          );
+        }
+      });
+    });
+  });
+
+  bot.action("create", (ctx) => ctx.scene.enter("create"));
+};
+
+function createScene () {
+  return new WizardScene(
     "create",
 
     /**
      * Выбор типа матча.
      */
     (ctx) => {
-      const fromId = ctx.from.id;
-      const keyboard = lodash.map(sports, (s) => Markup.callbackButton(s, s));
-      spots[fromId] = {fromId}; // Инициализируем spot
-      ctx.reply(
-        "Введите тип спортвного матча.",
-        Markup.inlineKeyboard(keyboard).extra()
-      );
-      return ctx.wizard.next();
+      ctx.replyWithMarkdown("*=> Создать новый матч*").then(() => {
+        const fromId = ctx.from.id;
+        const keyboard = lodash.map(sportTypes, (s) => Markup.callbackButton(s, s));
+        spots[fromId] = {fromId}; // Инициализируем spot
+        ctx.reply(
+          "Введите тип спортвного матча.",
+          Markup.inlineKeyboard(keyboard).extra()
+        );
+        ctx.wizard.next();
+      });
     },
 
     /**
      * Выбор времени проведения матча.
      */
     (ctx) => {
-      // TODO Добавить back, в случае если неверный формат.
-      spots[ctx.from.id].sportType = ctx.callbackQuery.data;
-      ctx.reply("Введите время проведения матча.");
-      return ctx.wizard.next();
+      const sportType = ctx.callbackQuery.data;
+      if (lodash.includes(sportTypes, sportType)) {
+        spots[ctx.from.id].sportType = ctx.callbackQuery.data;
+        ctx.reply("Введите дату проведения матча");
+        return ctx.wizard.next();
+      } else {
+        ctx.reply("Что-то пошло не так, попробуйте еще раз!");
+        return ctx.wizard.back();
+      }
     },
 
     /**
@@ -55,7 +95,7 @@ module.exports = (bot) => {
      */
     (ctx) => {
       spots[ctx.from.id].spotTime = ctx.message.text;
-      ctx.reply("Введите место проведения матча.");
+      ctx.reply("Введите место проведения матча");
       return ctx.wizard.next();
     },
 
@@ -64,7 +104,7 @@ module.exports = (bot) => {
      */
     (ctx) => {
       spots[ctx.from.id].location = ctx.message.text;
-      ctx.reply("Введите цену за одного человека.");
+      ctx.reply("Введите цену за одного человека");
       return ctx.wizard.next();
     },
 
@@ -73,7 +113,7 @@ module.exports = (bot) => {
      */
     (ctx) => {
       spots[ctx.from.id].price = ctx.message.text;
-      ctx.reply("Введите количество человек.");
+      ctx.reply("Введите количество человек");
       return ctx.wizard.next();
     },
 
@@ -81,9 +121,14 @@ module.exports = (bot) => {
      * Ввод информации по оплате.
      */
     (ctx) => {
-      spots[ctx.from.id].count = ctx.message.text;
-      ctx.reply("Введите доп. информацию по оплате.");
-      return ctx.wizard.next();
+      try {
+        spots[ctx.from.id].count = Number.parseInt(ctx.message.text, 10);
+        ctx.reply("Введите доп. информацию по оплате");
+        return ctx.wizard.next();
+      } catch (e) {
+        ctx.reply("Что-то пошло не так, попробуйте еще раз!");
+        return ctx.wizard.back();
+      }
     },
 
     /**
@@ -95,23 +140,13 @@ module.exports = (bot) => {
         SpotAPI.createSpot(spots[ctx.from.id]);
         ctx.reply("Матч успешно создан!");
         delete spots[ctx.from.id]; // Удаляем информацию из кэша.
+        return ctx.scene.leave();
       } catch (e) {
         logger.error("Can't create group, cause of:", e);
         ctx.reply("Что-то пошло не так, попробуйте еще раз!");
         return ctx.wizard.back();
       }
-      return ctx.scene.leave();
     }
   );
-
-  // Create scene manager
-  const stage = new Stage();
-
-  // Scene registration
-  stage.register(create);
-
-  bot.use(session());
-  bot.use(stage.middleware());
-  bot.action("create", (ctx) => ctx.scene.enter("create"));
-};
+}
 

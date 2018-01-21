@@ -26,32 +26,35 @@ const connectPromise = mongoose.connect(
   config.get("database:options")
 );
 
-mongoose.clean = function (withResources, done) {
+/**
+ * For test use.
+ */
+mongoose.clean = function (done) {
   if (mongoose.get("test")) {
     if (!connectPromise.done) {
       connectPromise.then(() => {
-        dropCollections(withResources, done);
+        dropCollections(done);
       }, () => {
-        logger.warn("Can\"t open connection.");
+        logger.warn("Can't open connection.");
       });
     } else {
-      dropCollections(withResources, done);
+      dropCollections(done);
     }
   }
 };
 
-function dropCollections (withResources, done) {
-  mongoose.connection.db.dropCollection("interviews", cleanHandler);
-  mongoose.connection.db.dropCollection("users", cleanHandler);
-  mongoose.connection.db.dropCollection("practice-queues", cleanHandler);
-  mongoose.connection.db.dropCollection("practice-groups", cleanHandler);
-  withResources && mongoose.connection.db.dropCollection("resources", cleanHandler);
-  done && done();
+function dropCollections (done) {
+  mongoose.connection.db.dropCollection("spot", () => {
+    if (err) {
+      logger.warn("Collection couldn't be removed", err);
+    }
+    done && done();
+  });
 }
 
 function cleanHandler (err) {
   if (err) {
-    logger.warn("Collection couldn\"t be removed", err);
+    logger.warn("Collection couldn't be removed", err);
     return;
   }
   logger.info("Collection removed");

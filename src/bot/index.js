@@ -9,7 +9,7 @@ const Markup = require("telegraf/markup");
 const bot = new Telegraf(config.get("telegram:token"));
 
 bot.start((ctx) => {
-  ctx.reply("Выбирите действие.", Markup.inlineKeyboard([
+  ctx.reply("Выберите действие", Markup.inlineKeyboard([
     Markup.callbackButton("Список доступных матчей", "groups"),
     Markup.callbackButton("Создать новый матч", "create")
   ]).extra());
