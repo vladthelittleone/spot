@@ -6,12 +6,13 @@ const Schema = mongoose.Schema;
 
 let schema = new Schema({
   fromId:      Number,
-  spotTime:    Date,
+  spotTime:    String,
+  sportType:   String,
   created:     Date,
-  count:       Number,
-  price:       Number,
+  count:       String,
+  price:       String,
   location:    String,
-  paymentInfo: Object
+  paymentInfo: String
 });
 
 const Spot = mongoose.model("spot", schema);
@@ -23,6 +24,7 @@ Spot.create = async (spot) => {
       fromId:      spot.fromId,
       spotTime:    spot.spotTime,
       location:    spot.location,
+      sportType:   spot.sportType,
       price:       spot.price,
       count:       spot.count, // Максимальное кол-во человек или необходимое.
       paymentInfo: spot.paymentInfo,
