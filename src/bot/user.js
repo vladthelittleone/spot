@@ -1,25 +1,21 @@
 /**
  * Здесь выполняем логику связанную с пользователем.
- *
- * @since 20.01.2018
- * @author Skurishin Vladislav
  */
+
 const Stage = require("telegraf/stage");
 const WizardScene = require("telegraf/scenes/wizard");
 const Markup = require("telegraf/markup");
 const SpotAPI = require("../api");
-const SpotModel = require("../models/spot");
-
 const config = require("../config");
 const logger = require("../utils/log")(module);
-
 const session = require("telegraf/session");
 const lodash = require("lodash");
-const spots = {};
 
+const spots = {};
 const sportTypes = config.get("sportTypes");
 
 module.exports = (bot) => {
+
   // Сцена создания нового матча.
   const create = createScene();
 
@@ -33,7 +29,7 @@ module.exports = (bot) => {
   bot.use(stage.middleware());
 
   bot.action("groups", (ctx) => {
-    SpotModel.getOpenGroups().then((groups) => {
+    SpotAPI.getOpenSpots().then((groups) => {
       ctx.replyWithMarkdown("*=> Список доступных матчей*").then(() => {
         for (const group of groups) {
           const {sportType, spotTime, location, price, count, fromId} = group;
@@ -57,6 +53,7 @@ module.exports = (bot) => {
 
 function createScene () {
   return new WizardScene(
+
     "create",
 
     /**

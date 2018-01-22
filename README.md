@@ -1,1 +1,1 @@
-# spot-server
+# spot

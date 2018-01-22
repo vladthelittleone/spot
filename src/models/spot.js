@@ -1,5 +1,3 @@
-"use strict";
-
 const mongoose = require("../utils/mongoose");
 
 const Schema = mongoose.Schema;
@@ -18,7 +16,7 @@ let schema = new Schema({
   price:       String,
   location:    String,
   paymentInfo: String,
-  status:       {
+  status:      {
     type:    String,
     enum:    [
       ENTRY_STATUS.OPEN,
@@ -30,23 +28,23 @@ let schema = new Schema({
 
 const Spot = mongoose.model("spot", schema);
 
-module.exports = Spot;
-
-Spot.getOpenGroups = async () => {
+Spot.getOpenSpots = async () => {
   return await Spot.find({status: ENTRY_STATUS.OPEN});
 };
 
 Spot.create = async (spot) => {
   const group = new Spot({
-      fromId:      spot.fromId,
-      spotTime:    spot.spotTime,
-      location:    spot.location,
-      sportType:   spot.sportType,
-      price:       spot.price,
-      count:       spot.count, // Максимальное кол-во человек или необходимое.
-      paymentInfo: spot.paymentInfo,
-      created:     Date.now()
-    })
-  ;
+    fromId:      spot.fromId,
+    spotTime:    spot.spotTime,
+    location:    spot.location,
+    sportType:   spot.sportType,
+    price:       spot.price,
+    count:       spot.count, // Максимальное кол-во человек или необходимое.
+    paymentInfo: spot.paymentInfo,
+    created:     Date.now()
+  });
+
   return await group.save();
 };
+
+module.exports = Spot;
