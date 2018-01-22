@@ -10,6 +10,8 @@ const config = require("../config");
 const logger = require("../utils/log")(module);
 const session = require("telegraf/session");
 const lodash = require("lodash");
+const keyboard = require('./keyboard');
+const message = require('./message');
 
 const spots = {};
 const sportTypes = config.get("sportTypes");
@@ -28,32 +30,34 @@ module.exports = (bot) => {
   bot.use(session());
   bot.use(stage.middleware());
 
-  bot.action("groups", (ctx) => {
+  bot.hears(message.OPEN_GROUPS, (ctx) => {
     SpotAPI.getOpenSpots().then((groups) => {
-      ctx.replyWithMarkdown("*=> Список доступных матчей*").then(() => {
-        for (const group of groups) {
-          const {sportType, spotTime, location, price, count, fromId} = group;
-          let str = "";
-          str += `Матч: ${sportType}\n`;
-          str += `Дата проведения: ${spotTime}\n`;
-          str += `Место проведения: ${location}\n`;
-          str += `Цена: ${price}\n`;
-          str += `Необходимо: ${count} человек`;
-          ctx.reply(
-            str,
-            Markup.inlineKeyboard([Markup.callbackButton("Добавиться", fromId)]).extra()
-          );
-        }
-      });
+      ctx.replyWithMarkdown("*=> Список доступных матчей*")
+         .then(async () => {
+             for (const group of groups) {
+               const {sportType, spotTime, location, price, count, fromId} = group;
+               let str = "";
+               str += `Матч: ${sportType}\n`;
+               str += `Дата проведения: ${spotTime}\n`;
+               str += `Место проведения: ${location}\n`;
+               str += `Цена: ${price}\n`;
+               str += `Необходимо: ${count} человек`;
+               await ctx.reply(
+                 str,
+                 Markup.inlineKeyboard([Markup.callbackButton("Добавиться", fromId)]).extra()
+               );
+             }
+           }
+         )
+         .then(() => keyboard.main(ctx));
     });
   });
 
-  bot.action("create", (ctx) => ctx.scene.enter("create"));
+  bot.hears(message.CREATE, (ctx) => ctx.scene.enter("create"));
 };
 
 function createScene () {
   return new WizardScene(
-
     "create",
 
     /**
@@ -134,8 +138,10 @@ function createScene () {
     (ctx) => {
       spots[ctx.from.id].paymentInfo = ctx.message.text;
       try {
-        SpotAPI.createSpot(spots[ctx.from.id]);
-        ctx.reply("Матч успешно создан!");
+        SpotAPI.createSpot(spots[ctx.from.id])
+               .then(() => {
+                 ctx.reply("Матч успешно создан!").then(() => keyboard.main(ctx));
+               });
         delete spots[ctx.from.id]; // Удаляем информацию из кэша.
         return ctx.scene.leave();
       } catch (e) {
