@@ -3,6 +3,7 @@
 /**
  * @author Skurishin Vladislav
  */
+
 const mongoose = require("mongoose");
 const config = require("../config");
 const logger = require("./log")(module);
@@ -43,21 +44,13 @@ mongoose.clean = function (done) {
   }
 };
 
-function dropCollections (done) {
-  mongoose.connection.db.dropCollection("spot", () => {
-    if (err) {
-      logger.warn("Collection couldn't be removed", err);
+function dropCollections(done) {
+  mongoose.connection.db.dropCollection("spot", (error) => {
+    if (error) {
+      logger.warn("Collection couldn't be removed", error);
     }
     done && done();
   });
-}
-
-function cleanHandler (err) {
-  if (err) {
-    logger.warn("Collection couldn't be removed", err);
-    return;
-  }
-  logger.info("Collection removed");
 }
 
 module.exports = mongoose;
