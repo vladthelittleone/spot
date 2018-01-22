@@ -14,6 +14,7 @@
     "migration": "NODE_PATH=./src NODE_ENV=migration node ./src/models/migration.js"
   },
   "dependencies": {
+    "lodash": "^4.17.4",
     "mongoose": "^5.0.1",
     "nconf": "^0.10.0",
     "telegraf": "^3.17.5",

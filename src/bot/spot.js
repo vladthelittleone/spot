@@ -4,6 +4,4 @@
 
 const logger = require("../utils/log")(module);
 
-module.exports = (bot) => {
-
-};
+module.exports = (bot) => {};

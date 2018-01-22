@@ -15,6 +15,7 @@ const spots = {};
 const sportTypes = config.get("sportTypes");
 
 module.exports = (bot) => {
+
   // Сцена создания нового матча.
   const create = createScene();
 
@@ -52,6 +53,7 @@ module.exports = (bot) => {
 
 function createScene () {
   return new WizardScene(
+
     "create",
 
     /**
