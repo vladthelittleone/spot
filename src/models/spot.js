@@ -4,6 +4,11 @@ const mongoose = require("../utils/mongoose");
 
 const Schema = mongoose.Schema;
 
+const ENTRY_STATUS = {
+  "OPEN":   "open",
+  "CLOSED": "closed"
+};
+
 let schema = new Schema({
   fromId:      Number,
   spotTime:    String,
@@ -12,12 +17,24 @@ let schema = new Schema({
   count:       String,
   price:       String,
   location:    String,
-  paymentInfo: String
+  paymentInfo: String,
+  status:       {
+    type:    String,
+    enum:    [
+      ENTRY_STATUS.OPEN,
+      ENTRY_STATUS.CLOSED
+    ],
+    default: ENTRY_STATUS.OPEN
+  }
 });
 
 const Spot = mongoose.model("spot", schema);
 
 module.exports = Spot;
+
+Spot.getOpenGroups = async () => {
+  return await Spot.find({status: ENTRY_STATUS.OPEN});
+};
 
 Spot.create = async (spot) => {
   const group = new Spot({
