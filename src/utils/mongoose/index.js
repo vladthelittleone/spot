@@ -30,7 +30,7 @@ mongoose.Promise = global.Promise;
 
 // for test and migration use
 mongoose.clean = function (done) {
-  if (mongoose.get("test") || mongoose.get('migration') === 'migration') {
+  if (mongoose.get("test") || mongoose.get('migration')) {
     if (!connectPromise.done) {
       connectPromise.then(() => {
         dropCollections(done);
