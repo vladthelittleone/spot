@@ -1,10 +1,6 @@
-/**
- * @author Skurishin Vladislav
- */
-
 const mongoose = require("mongoose");
-const config = require("../config");
-const logger = require("./log")(module);
+const config = require("../../config");
+const logger = require("../log")(module);
 
 // флаг для определения - является ли текущей коннект тестовым
 mongoose.set(
@@ -25,11 +21,9 @@ const connectPromise = mongoose.connect(
   config.get("database:options")
 );
 
-/**
- * for test use
- */
+// for test use
 mongoose.clean = function (done) {
-  if (mongoose.get("test")) {
+  if (mongoose.get("test") || process.env.NODE_ENV === 'migration') {
     if (!connectPromise.done) {
       connectPromise.then(() => {
         dropCollections(done);
@@ -42,7 +36,7 @@ mongoose.clean = function (done) {
   }
 };
 
-function dropCollections(done) {
+function dropCollections (done) {
   mongoose.connection.db.dropCollection("spot", (error) => {
     if (error) {
       logger.warn("Collection couldn't be removed", error);

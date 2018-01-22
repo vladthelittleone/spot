@@ -2,7 +2,7 @@ const logger = require("../utils/log")(module);
 
 class GroupManager {
 
-  static async execute() {
+  static async execute () {
     logger.info("Group manager execute.");
   }
 }
