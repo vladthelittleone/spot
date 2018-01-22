@@ -13,8 +13,8 @@ const migration = async () => {
     await SpotAPI.createSpot(spot);
   }
 
-  const spotr = await SpotAPI.getOpenSpots();
-  console.log(spotr);
+  await SpotAPI.getOpenSpots();
+
   mongoose.disconnect();
 
   logger.info('database migration ended');

@@ -1,22 +1,18 @@
 /**
  * Здесь выполняем логику связанную с пользователем.
- *
- * @since 20.01.2018
- * @author Skurishin Vladislav
  */
+
 const Stage = require("telegraf/stage");
 const WizardScene = require("telegraf/scenes/wizard");
 const Markup = require("telegraf/markup");
 const SpotAPI = require("../api");
 const SpotModel = require("../models/spot");
-
 const config = require("../config");
 const logger = require("../utils/log")(module);
-
 const session = require("telegraf/session");
 const lodash = require("lodash");
-const spots = {};
 
+const spots = {};
 const sportTypes = config.get("sportTypes");
 
 module.exports = (bot) => {

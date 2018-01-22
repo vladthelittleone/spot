@@ -9,12 +9,17 @@ mongoose.set(
 );
 
 mongoose.set(
+  'migration',
+  process.env.NODE_ENV === 'migration'
+);
+
+mongoose.set(
   "debug",
   config.get("database:debug")
 );
 
-let databaseUri = mongoose.get("test") ? config.get("database:testUri")
-  : config.get("database:uri");
+let databaseUri = mongoose.get("test") ?
+                  config.get("database:testUri") : config.get("database:uri");
 
 const connectPromise = mongoose.connect(
   databaseUri,
@@ -23,7 +28,7 @@ const connectPromise = mongoose.connect(
 
 // for test use
 mongoose.clean = function (done) {
-  if (mongoose.get("test") || process.env.NODE_ENV === 'migration') {
+  if (mongoose.get("test") || mongoose.get('migration') === 'migration') {
     if (!connectPromise.done) {
       connectPromise.then(() => {
         dropCollections(done);
@@ -37,7 +42,7 @@ mongoose.clean = function (done) {
 };
 
 function dropCollections (done) {
-  mongoose.connection.db.dropCollection("spot", (error) => {
+  mongoose.connection.db.dropCollection("spots", (error) => {
     if (error) {
       logger.warn("Collection couldn't be removed", error);
     }

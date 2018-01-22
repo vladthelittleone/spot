@@ -1,7 +1,3 @@
-/**
- * @author Skurishin Vladislav
- */
-
 const nconf = require("nconf");
 const path = require("path");
 

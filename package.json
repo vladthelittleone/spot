@@ -10,7 +10,8 @@
     "node": "NODE_PATH=./src NODE_ENV=development node ./src/app.js",
     "watch": "./node_modules/.bin/esw --watch",
     "lint": "./node_modules/.bin/esw",
-    "test": "NODE_PATH=. NODE_ENV=test mocha --recursive --timeout 200000 --exit"
+    "test": "NODE_PATH=. NODE_ENV=test mocha --recursive --timeout 200000 --exit",
+    "migration": "NODE_PATH=./src NODE_ENV=migration node ./src/models/migration.js"
   },
   "dependencies": {
     "connect-mongo": "^2.0.0",
