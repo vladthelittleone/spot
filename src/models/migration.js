@@ -1,11 +1,23 @@
 const logger = require('../utils/log')(module);
 const SpotAPI = require('../api');
 const mongoose = require('../utils/mongoose');
+const devSpots = require('./dev.migration');
 
-logger.info('starting database migration');
+const migration = async () => {
 
-SpotAPI.getOpenGroups().then((groups) => {
-  logger.info(groups);
+  logger.info('starting database migration');
 
-  mongoose.disconnect()
-});
+  await  SpotAPI.cleanSpots();
+
+  for (const spot of devSpots) {
+    await SpotAPI.createSpot(spot)
+  }
+
+  await SpotAPI.getOpenSpots();
+
+  mongoose.disconnect();
+
+  logger.info('database migration ended')
+};
+
+migration();

@@ -28,23 +28,27 @@ let schema = new Schema({
 
 const Spot = mongoose.model("spot", schema);
 
-module.exports = Spot;
-
-Spot.getOpenGroups = async () => {
+Spot.getOpenSpots = async () => {
   return await Spot.find({status: ENTRY_STATUS.OPEN});
+};
+
+Spot.clean = async () => {
+  return await Spot.remove()
 };
 
 Spot.create = async (spot) => {
   const group = new Spot({
-      fromId: spot.fromId,
-      spotTime: spot.spotTime,
-      location: spot.location,
-      sportType: spot.sportType,
-      price: spot.price,
-      count: spot.count, // Максимальное кол-во человек или необходимое.
-      paymentInfo: spot.paymentInfo,
-      created: Date.now()
-    })
-  ;
+    fromId: spot.fromId,
+    spotTime: spot.spotTime,
+    location: spot.location,
+    sportType: spot.sportType,
+    price: spot.price,
+    count: spot.count, // Максимальное кол-во человек или необходимое.
+    paymentInfo: spot.paymentInfo,
+    created: Date.now()
+  });
+
   return await group.save();
 };
+
+module.exports = Spot;

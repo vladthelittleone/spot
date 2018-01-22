@@ -33,7 +33,7 @@ module.exports = (bot) => {
   bot.use(stage.middleware());
 
   bot.action("groups", (ctx) => {
-    SpotModel.getOpenGroups().then((groups) => {
+    SpotModel.getOpenSpots().then((groups) => {
       ctx.replyWithMarkdown("*=> Список доступных матчей*").then(() => {
         for (const group of groups) {
           const {sportType, spotTime, location, price, count, fromId} = group;

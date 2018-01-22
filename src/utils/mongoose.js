@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * @author Skurishin Vladislav
  */
@@ -8,7 +6,7 @@ const mongoose = require("mongoose");
 const config = require("../config");
 const logger = require("./log")(module);
 
-// Флаг для определения - является ли текущей коннект тестовым.
+// флаг для определения - является ли текущей коннект тестовым
 mongoose.set(
   "test",
   process.env.NODE_ENV === "test"
@@ -28,7 +26,7 @@ const connectPromise = mongoose.connect(
 );
 
 /**
- * For test use.
+ * for test use
  */
 mongoose.clean = function (done) {
   if (mongoose.get("test")) {

@@ -3,11 +3,15 @@ const SpotModel = require("./models/spot");
 class SpotAPI {
 
   static async createSpot(spot) {
-    await SpotModel.create(spot);
+    return await SpotModel.create(spot);
   }
 
-  static async getOpenGroups() {
-    return await SpotModel.getOpenGroups();
+  static async getOpenSpots() {
+    return await SpotModel.getOpenSpots();
+  }
+
+  static async cleanSpots() {
+    return await SpotModel.clean();
   }
 }
 
