@@ -1,11 +1,10 @@
-"use strict";
-
-const logger = require("../utils/log");
+const logger = require("../utils/log")(module);
 
 class GroupManager {
-  async execute () {
+
+  static async execute() {
     logger.info("Group manager execute.");
   }
 }
 
-module.exports = new GroupManager();
+module.exports = GroupManager;

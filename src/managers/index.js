@@ -1,23 +1,19 @@
-/**
- * @author Skurishin Vladislav
- */
 const mongoose = require("../utils/mongoose");
 const config = require("../config/index");
 
-const GroupManager = require("./group-manager");
-
 class JobManager {
-  static startJobs (delay) {
+
+  static startJobs(manager, delay) {
     mongoose.connection.on("open", () => {
-      this.start(GroupManager, delay || config.get("server:delay"));
+      this.start(manager, delay || config.get("server:delay"));
     });
   }
 
-  static stopJobs () {
-    this.stop(GroupManager);
+  static stopJobs(manager) {
+    this.stop(manager);
   }
 
-  static start (manager, delay) {
+  static start(manager, delay) {
     const exec = manager.execute;
     exec && exec();
     manager.interval && JobManager.stop(manager);
@@ -27,7 +23,7 @@ class JobManager {
     );
   }
 
-  static stop (manager) {
+  static stop(manager) {
     manager.interval && clearInterval(manager.interval);
   }
 }
