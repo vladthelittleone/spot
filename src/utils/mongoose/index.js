@@ -26,7 +26,7 @@ const connectPromise = mongoose.connect(
   config.get("database:options")
 );
 
-// for test use
+// for test and migration use
 mongoose.clean = function (done) {
   if (mongoose.get("test") || mongoose.get('migration') === 'migration') {
     if (!connectPromise.done) {

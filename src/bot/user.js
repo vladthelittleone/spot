@@ -6,7 +6,6 @@ const Stage = require("telegraf/stage");
 const WizardScene = require("telegraf/scenes/wizard");
 const Markup = require("telegraf/markup");
 const SpotAPI = require("../api");
-const SpotModel = require("../models/spot");
 const config = require("../config");
 const logger = require("../utils/log")(module);
 const session = require("telegraf/session");
@@ -29,7 +28,7 @@ module.exports = (bot) => {
   bot.use(stage.middleware());
 
   bot.action("groups", (ctx) => {
-    SpotModel.getOpenSpots().then((groups) => {
+    SpotAPI.getOpenSpots().then((groups) => {
       ctx.replyWithMarkdown("*=> Список доступных матчей*").then(() => {
         for (const group of groups) {
           const {sportType, spotTime, location, price, count, fromId} = group;
