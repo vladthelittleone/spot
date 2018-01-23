@@ -93,16 +93,11 @@ function createScene () {
         replyChooseSpotType(ctx);
       };
 
-      if (ctx.callbackQuery) {
-        const sportType = ctx.callbackQuery.data;
-        if (lodash.includes(sportTypes, sportType)) {
-          spots[ctx.from.id].sportType = ctx.callbackQuery.data;
-          ctx.reply("Введите дату проведения матча");
-          return ctx.wizard.next();
-        } else {
-          replyError(ctx);
-          return ctx.wizard.back();
-        }
+      const sportType = ctx.callbackQuery ? ctx.callbackQuery.data : null;
+      if (sportType && lodash.includes(sportTypes, sportType)) {
+        spots[ctx.from.id].sportType = ctx.callbackQuery.data;
+        ctx.reply("Введите дату проведения матча");
+        return ctx.wizard.next();
       } else {
         replyError(ctx);
         return ctx.wizard.back();
