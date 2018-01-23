@@ -8,7 +8,7 @@ const ENTRY_STATUS = {
 };
 
 let schema = new Schema({
-  fromId:      Number,
+  fromID:      Number,
   spotTime:    String,
   sportType:   String,
   created:     Date,
@@ -34,7 +34,7 @@ Spot.getOpenSpots = async () => {
 
 Spot.create = async (spot) => {
   const group = new Spot({
-    fromId:      spot.fromId,
+    fromID:      spot.fromID,
     spotTime:    spot.spotTime,
     location:    spot.location,
     sportType:   spot.sportType,

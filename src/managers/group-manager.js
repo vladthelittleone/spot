@@ -10,9 +10,10 @@ class GroupManager {
 
     for (const spot of spots) {
 
-      const {spotTime} = spot;
+      const {spotTime, fromID} = spot,
+        diff = moment(spotTime).diff(new Date(), 'hours');
 
-      logger.info(moment(spotTime).diff(new Date(), 'hours'));
+      if (diff < 24 && diff > 0) logger.info(fromID);
     }
   }
 }

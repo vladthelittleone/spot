@@ -34,7 +34,7 @@ module.exports = (bot) => {
       ctx.replyWithMarkdown("*=> Список доступных матчей*")
          .then(async () => {
              for (const group of groups) {
-               const {sportType, spotTime, location, price, count, fromId} = group;
+               const {sportType, spotTime, location, price, count, fromID} = group;
                let str = "";
                str += `Матч: ${sportType}\n`;
                str += `Дата проведения: ${spotTime}\n`;
@@ -43,7 +43,7 @@ module.exports = (bot) => {
                str += `Необходимо: ${count} человек`;
                await ctx.reply(
                  str,
-                 Markup.inlineKeyboard([Markup.callbackButton("Добавиться", fromId)]).extra()
+                 Markup.inlineKeyboard([Markup.callbackButton("Добавиться", fromID)]).extra()
                );
              }
            }
@@ -63,9 +63,9 @@ function createScene () {
      */
     (ctx) => {
       ctx.replyWithMarkdown("*=> Создать новый матч*").then(() => {
-        const fromId = ctx.from.id;
+        const fromID = ctx.from.id;
         const keyboard = lodash.map(sportTypes, (s) => Markup.callbackButton(s, s));
-        spots[fromId] = {fromId}; // Инициализируем spot
+        spots[fromID] = {fromID}; // Инициализируем spot
         ctx.reply(
           "Введите тип спортвного матча.",
           Markup.inlineKeyboard(keyboard).extra()
