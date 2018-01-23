@@ -10,7 +10,6 @@ const config = require("../config");
 const logger = require("../utils/log")(module);
 const session = require("telegraf/session");
 const lodash = require("lodash");
-const keyboard = require('./keyboard');
 const message = require('./message');
 
 const spots = {};
@@ -48,8 +47,7 @@ module.exports = (bot) => {
                );
              }
            }
-         )
-         .then(() => keyboard.main(ctx));
+         );
     });
   });
 
@@ -80,13 +78,20 @@ function createScene () {
      * Выбор времени проведения матча.
      */
     (ctx) => {
-      const sportType = ctx.callbackQuery.data;
-      if (lodash.includes(sportTypes, sportType)) {
-        spots[ctx.from.id].sportType = ctx.callbackQuery.data;
-        ctx.reply("Введите дату проведения матча");
-        return ctx.wizard.next();
-      } else {
-        ctx.reply("Что-то пошло не так, попробуйте еще раз!");
+      try {
+        const sportType = ctx.callbackQuery.data;
+        if (lodash.includes(sportTypes, sportType)) {
+          spots[ctx.from.id].sportType = ctx.callbackQuery.data;
+          ctx.reply("Введите дату проведения матча");
+          return ctx.wizard.next();
+        } else {
+          ctx.reply("Что-то пошло не так, попробуйте еще раз!");
+          return ctx.wizard.back();
+        }
+      }
+      catch (error) {
+        // often if ctx.callbackQuery.data is undefined
+        ctx.reply('Что-то пошло не так, попробуйте еще раз!');
         return ctx.wizard.back();
       }
     },
@@ -139,9 +144,7 @@ function createScene () {
       spots[ctx.from.id].paymentInfo = ctx.message.text;
       try {
         SpotAPI.createSpot(spots[ctx.from.id])
-               .then(() => {
-                 ctx.reply("Матч успешно создан!").then(() => keyboard.main(ctx));
-               });
+               .then(() => ctx.reply("Матч успешно создан!"));
         delete spots[ctx.from.id]; // Удаляем информацию из кэша.
         return ctx.scene.leave();
       } catch (e) {

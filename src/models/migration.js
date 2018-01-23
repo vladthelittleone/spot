@@ -17,7 +17,7 @@ const migration = async () => {
 
   mongoose.disconnect();
 
-  logger.info('database migration ended');
+  logger.info('database migration ended successful');
 };
 
 migration();
