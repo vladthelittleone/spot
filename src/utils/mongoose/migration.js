@@ -1,7 +1,7 @@
 module.exports = [
   {
     fromID:      1,
-    spotTime:    new Date("2018-01-22T12:30:00Z").toISOString(),
+    spotTime:    '2018-01-23T12:15:00',
     location:    'ул. Передовиков, д. 13, к. 1',
     sportType:   'Футбол',
     price:       2500,
@@ -10,7 +10,7 @@ module.exports = [
     created:     Date.now()
   }, {
     fromID:      2,
-    spotTime:    new Date("2018-01-23T09:15:00Z").toISOString(),
+    spotTime:    '2018-01-24T09:30:00',
     location:    'ул. Бакалейщика, д. 111, к. 85',
     sportType:   'Баскетбол',
     price:       4000,
@@ -19,7 +19,7 @@ module.exports = [
     created:     Date.now()
   }, {
     fromID:      3,
-    spotTime:    new Date("2018-01-24T16:45:00Z").toISOString(),
+    spotTime:    '2018-01-25T16:45:00',
     location:    'ул. MAD MAX, д. 0, к. -1',
     sportType:   'Футбол',
     price:       100,

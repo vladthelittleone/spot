@@ -11,7 +11,7 @@ class GroupManager {
     for (const spot of spots) {
 
       const {spotTime, fromID} = spot,
-        diff = moment(spotTime).diff(new Date(), 'hours');
+        diff = moment(spotTime, moment.ISO_8601).diff(new Date(), 'hours');
 
       if (diff < 24 && diff > 0) logger.info(fromID);
     }
