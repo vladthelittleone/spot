@@ -55,6 +55,17 @@ module.exports = (bot) => {
 };
 
 function createScene () {
+
+  const replyChooseSpotType = (ctx) => {
+
+    const keyboard = lodash.map(sportTypes, (s) => Markup.callbackButton(s, s));
+
+    ctx.reply(
+      "Введите тип спортвного матча.",
+      Markup.inlineKeyboard(keyboard).extra()
+    );
+  };
+
   return new WizardScene(
     "create",
 
@@ -64,13 +75,11 @@ function createScene () {
     (ctx) => {
       ctx.replyWithMarkdown("*=> Создать новый матч*").then(() => {
         const fromID = ctx.from.id;
-        const keyboard = lodash.map(sportTypes, (s) => Markup.callbackButton(s, s));
-        spots[fromID] = {fromID}; // Инициализируем spot
-        ctx.reply(
-          "Введите тип спортвного матча.",
-          Markup.inlineKeyboard(keyboard).extra()
-        );
-        ctx.wizard.next();
+        spots[ctx.from.id] = {fromID}; // инициализируем новый spot
+
+        replyChooseSpotType(ctx);
+
+        return ctx.wizard.next();
       });
     },
 
@@ -78,20 +87,24 @@ function createScene () {
      * Выбор времени проведения матча.
      */
     (ctx) => {
-      try {
+
+      const replyError = (ctx) => {
+        ctx.reply(message.USER_ERROR_MSG);
+        replyChooseSpotType(ctx);
+      };
+
+      if (ctx.callbackQuery) {
         const sportType = ctx.callbackQuery.data;
         if (lodash.includes(sportTypes, sportType)) {
           spots[ctx.from.id].sportType = ctx.callbackQuery.data;
           ctx.reply("Введите дату проведения матча");
           return ctx.wizard.next();
         } else {
-          ctx.reply("Что-то пошло не так, попробуйте еще раз!");
+          replyError(ctx);
           return ctx.wizard.back();
         }
-      }
-      catch (error) {
-        // often if ctx.callbackQuery.data is undefined
-        ctx.reply('Что-то пошло не так, попробуйте еще раз!');
+      } else {
+        replyError(ctx);
         return ctx.wizard.back();
       }
     },
@@ -132,7 +145,7 @@ function createScene () {
         ctx.reply("Введите доп. информацию по оплате");
         return ctx.wizard.next();
       } catch (e) {
-        ctx.reply("Что-то пошло не так, попробуйте еще раз!");
+        ctx.reply(message.USER_ERROR_MSG);
         return ctx.wizard.back();
       }
     },
@@ -149,7 +162,7 @@ function createScene () {
         return ctx.scene.leave();
       } catch (e) {
         logger.error("Can't create group, cause of:", e);
-        ctx.reply("Что-то пошло не так, попробуйте еще раз!");
+        ctx.reply(message.USER_ERROR_MSG);
         return ctx.wizard.back();
       }
     }
