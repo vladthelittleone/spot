@@ -1,22 +1,29 @@
 const mongoose = require("../utils/mongoose");
+const status = require('../utils/status');
 
 const Schema = mongoose.Schema;
 
-const ENTRY_STATUS = {
-  "OPEN":   "open",
-  "CLOSED": "closed"
-};
+const {NOTIFY_STATUS, ENTRY_STATUS} = status;
 
 let schema = new Schema({
-  fromID:      Number,
-  spotTime:    String,
-  sportType:   String,
-  created:     Date,
-  count:       String,
-  price:       String,
-  location:    String,
-  paymentInfo: String,
-  status:      {
+  fromID:       Number,
+  spotTime:     String,
+  sportType:    String,
+  created:      Date,
+  count:        String,
+  price:        String,
+  location:     String,
+  paymentInfo:  String,
+  notifyStatus: {
+    type:    String,
+    enum:    [
+      NOTIFY_STATUS.NOT_YET_NOTIFIED,
+      NOTIFY_STATUS.NOTIFIED_ONE_DAY_BEFORE,
+      NOTIFY_STATUS.NOTIFIED_ONE_HOUR_BEFORE
+    ],
+    default: NOTIFY_STATUS.NOT_YET_NOTIFIED
+  },
+  status:       {
     type:    String,
     enum:    [
       ENTRY_STATUS.OPEN,
@@ -30,6 +37,10 @@ const Spot = mongoose.model("spot", schema);
 
 Spot.getOpenSpots = async () => {
   return await Spot.find({status: ENTRY_STATUS.OPEN});
+};
+
+Spot.updateNotifyStatus = async (fromID, status) => {
+  return await Spot.update({fromID: fromID}, {notifyStatus: status});
 };
 
 Spot.create = async (spot) => {

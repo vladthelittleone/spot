@@ -11,6 +11,8 @@ const logger = require("../utils/log")(module);
 const session = require("telegraf/session");
 const lodash = require("lodash");
 const message = require('./message');
+const moment = require('moment');
+const keyboard = require('./keyboard');
 
 const spots = {};
 const sportTypes = config.get("sportTypes");
@@ -56,16 +58,6 @@ module.exports = (bot) => {
 
 function createScene () {
 
-  const replyChooseSpotType = (ctx) => {
-
-    const keyboard = lodash.map(sportTypes, (s) => Markup.callbackButton(s, s));
-
-    ctx.reply(
-      "Введите тип спортвного матча.",
-      Markup.inlineKeyboard(keyboard).extra()
-    );
-  };
-
   return new WizardScene(
     "create",
 
@@ -76,9 +68,7 @@ function createScene () {
       ctx.replyWithMarkdown("*=> Создать новый матч*").then(() => {
         const fromID = ctx.from.id;
         spots[ctx.from.id] = {fromID}; // инициализируем новый spot
-
-        replyChooseSpotType(ctx);
-
+        keyboard.chooseSpotType(ctx, sportTypes);
         return ctx.wizard.next();
       });
     },
@@ -90,7 +80,7 @@ function createScene () {
 
       const replyError = (ctx) => {
         ctx.reply(message.USER_ERROR_MSG);
-        replyChooseSpotType(ctx);
+        keyboard.chooseSpotType(ctx, sportTypes);
       };
 
       const sportType = ctx.callbackQuery ? ctx.callbackQuery.data : null;
@@ -108,7 +98,7 @@ function createScene () {
      * Выбор места проведения матча.
      */
     (ctx) => {
-      spots[ctx.from.id].spotTime = ctx.message.text;
+      spots[ctx.from.id].spotTime = moment(ctx.message.text, 'DD.MM.YY H:m').toISOString();
       ctx.reply("Введите место проведения матча");
       return ctx.wizard.next();
     },

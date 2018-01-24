@@ -9,6 +9,10 @@ class SpotAPI {
   static async getOpenSpots () {
     return await SpotModel.getOpenSpots();
   }
+
+  static async updateNotifyStatus (fromID, status) {
+    return await SpotModel.updateNotifyStatus(fromID, status);
+  }
 }
 
 module.exports = SpotAPI;
