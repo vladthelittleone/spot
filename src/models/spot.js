@@ -14,7 +14,7 @@ let schema = new Schema({
   price:        String,
   location:     String,
   paymentInfo:  String,
-  hashL         String,
+  hash:         String,
   notifyStatus: {
     type:    String,
     enum:    [

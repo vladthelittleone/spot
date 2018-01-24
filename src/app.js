@@ -1,6 +1,6 @@
 require("./bot");
 
 const manager = require("./managers");
-const GroupManager = require("./managers/group");
+const SpotManager = require("./managers/spot");
 
-manager.start(GroupManager);
+manager.start(SpotManager);

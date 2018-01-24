@@ -2,10 +2,12 @@
  * @since 24.01.2018
  * @author Skurishin Vladislav
  */
+
 const Markup = require("telegraf/markup");
 
 class Components {
-  static replyMatch(ctx, spot) {
+
+  static replyMatch (ctx, spot) {
     const {sportType, spotTime, location, price, count, fromId} = spot;
     let str = "";
     str += `Вид спорта: ${sportType}\n`;

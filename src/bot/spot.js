@@ -2,11 +2,11 @@
  * Здесь выполняем логику связанную с группой.
  */
 
-const logger = require("../utils/log")(module);
 const SpotAPI = require("../api");
 const Components = require("./components");
 
 module.exports = (bot) => {
+
   bot.hears(/start@SpotBBot (.+)/, async (ctx) => {
     const {match} = ctx;
     const spot = await SpotAPI.getSpotByHash(match[1]);

@@ -6,7 +6,7 @@ const message = require("../bot/message");
 
 const {NOTIFY_STATUS} = status;
 
-class GroupManager {
+class SpotManager {
 
   static async execute () {
 
@@ -28,4 +28,4 @@ class GroupManager {
   }
 }
 
-module.exports = GroupManager;
+module.exports = SpotManager;

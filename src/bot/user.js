@@ -149,7 +149,7 @@ function createScene () {
         delete spots[id]; // Удаляем информацию из "типа кэша".
         return ctx.scene.leave();
       } catch (e) {
-        logger.error("Can't create group, cause of:", e);
+        logger.error("Can't create spot, cause of:", e);
         ctx.reply(message.USER_ERROR_MSG);
         return ctx.wizard.back();
       }
