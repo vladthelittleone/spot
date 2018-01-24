@@ -32,6 +32,7 @@ module.exports = (bot) => {
   bot.use(stage.middleware());
 
   bot.hears(message.OPEN_GROUPS, (ctx) => {
+    console.log(ctx.from.id)
     SpotAPI.getOpenSpots().then((groups) => {
       ctx.replyWithMarkdown("*=> Список доступных матчей*")
          .then(async () => {

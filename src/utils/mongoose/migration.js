@@ -1,7 +1,7 @@
 module.exports = [
   {
-    fromID:      1,
-    spotTime:    "2018-01-23T12:15:00",
+    fromID:      179071944,
+    spotTime:    "2018-01-24T05:00:00",
     location:    "ул. Передовиков, д. 13, к. 1",
     sportType:   "Футбол",
     price:       2500,
@@ -10,7 +10,7 @@ module.exports = [
     created:     Date.now()
   }, {
     fromID:      2,
-    spotTime:    "2018-01-24T09:30:00",
+    spotTime:    "2018-01-25T09:30:00",
     location:    "ул. Бакалейщика, д. 111, к. 85",
     sportType:   "Баскетбол",
     price:       4000,

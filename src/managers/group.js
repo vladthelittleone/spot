@@ -15,7 +15,7 @@ class GroupManager {
     for (const spot of spots) {
 
       const {spotTime, fromID, notifyStatus} = spot,
-        diff = moment(spotTime, moment.ISO_8601).diff(new Date(), "hours");
+        diff = moment(spotTime, moment.ISO_8601).diff(moment(), "hours");
 
       if (diff <= 24 && diff >= 0 && notifyStatus === NOTIFY_STATUS.NOT_YET_NOTIFIED) {
         await Notification.send(fromID, message.NOTIFY_ONE_DAY_BEFORE);
