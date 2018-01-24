@@ -1,11 +1,7 @@
 const bot = require("./index");
 
-class Notification {
+const send = async (chat, text) => {
+  await bot.telegram.sendMessage(chat, text, {parse_mode: "Markdown"});
+};
 
-  static async send (chat, text) {
-
-    await bot.telegram.sendMessage(chat, text, {parse_mode: "Markdown"});
-  }
-}
-
-module.exports = Notification;
+module.exports = send;

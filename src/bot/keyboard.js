@@ -5,7 +5,7 @@ const lodash = require("lodash");
 const main = (ctx) => {
   ctx.reply("Выберите действие", Markup.keyboard([
     [message.OPEN_SPOTS],
-    [message.CREATE]
+    [message.CREATE_SPOT]
   ])
                                        .resize()
                                        .extra());

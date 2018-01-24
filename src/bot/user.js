@@ -8,7 +8,6 @@ const Components = require("./components");
 const Markup = require("telegraf/markup");
 const SpotAPI = require("../api");
 const config = require("../config");
-const logger = require("../utils/log")(module);
 const session = require("telegraf/session");
 const lodash = require("lodash");
 const message = require("./message");
@@ -32,9 +31,9 @@ module.exports = (bot) => {
   bot.use(session());
   bot.use(stage.middleware());
 
-  bot.action("spots", (ctx) => {
+  bot.hears(message.OPEN_SPOTS, (ctx) => {
     SpotAPI.getOpenSpots().then((spots) => {
-      ctx.replyWithMarkdown("*=> Список доступных матчей*").then(() => {
+      ctx.replyWithMarkdown(message.OPEN_SPOTS_LIST).then(() => {
         for (const spot of spots) {
           Components.replyMatch(ctx, spot);
         }
@@ -42,7 +41,7 @@ module.exports = (bot) => {
     });
   });
 
-  bot.hears(message.CREATE, (ctx) => ctx.scene.enter("create"));
+  bot.hears(message.CREATE_SPOT, (ctx) => ctx.scene.enter("create"));
 };
 
 function createScene () {
@@ -54,7 +53,7 @@ function createScene () {
      * Выбор типа матча.
      */
     (ctx) => {
-      ctx.replyWithMarkdown("*=> Создать новый матч*").then(() => {
+      ctx.replyWithMarkdown(message.CREATE_SPOT).then(() => {
         const fromID = ctx.from.id;
         spots[ctx.from.id] = {fromID}; // инициализируем новый spot
         keyboard.chooseSpotType(ctx, sportTypes);
@@ -72,10 +71,10 @@ function createScene () {
         keyboard.chooseSpotType(ctx, sportTypes);
       };
 
-      const sportType = ctx.callbackQuery ? ctx.callbackQuery.data : null;
+      const sportType = ctx.callbackQuery && ctx.callbackQuery.data;
       if (sportType && lodash.includes(sportTypes, sportType)) {
         spots[ctx.from.id].sportType = ctx.callbackQuery.data;
-        ctx.reply("Введите дату проведения матча");
+        ctx.reply(message.INSERT_SPOT_DATE);
         return ctx.wizard.next();
       } else {
         replyError(ctx);
@@ -88,7 +87,7 @@ function createScene () {
      */
     (ctx) => {
       spots[ctx.from.id].spotTime = moment(ctx.message.text, "DD.MM.YY H:m").toISOString();
-      ctx.reply("Введите место проведения матча");
+      ctx.reply(message.INSERT_SPOT_LOCATION);
       return ctx.wizard.next();
     },
 
@@ -97,7 +96,7 @@ function createScene () {
      */
     (ctx) => {
       spots[ctx.from.id].location = ctx.message.text;
-      ctx.reply("Введите цену за одного человека");
+      ctx.reply(message.INSERT_SPOT_COST);
       return ctx.wizard.next();
     },
 
@@ -106,7 +105,7 @@ function createScene () {
      */
     (ctx) => {
       spots[ctx.from.id].price = ctx.message.text;
-      ctx.reply("Введите количество человек");
+      ctx.reply(message.INSERT_SPOT_MEMBERS);
       return ctx.wizard.next();
     },
 
@@ -116,7 +115,7 @@ function createScene () {
     (ctx) => {
       try {
         spots[ctx.from.id].count = Number.parseInt(ctx.message.text, 10);
-        ctx.reply("Введите доп. информацию по оплате");
+        ctx.reply(message.INSERT_SPOT_PAYMENT_INFO);
         return ctx.wizard.next();
       } catch (e) {
         ctx.reply(message.USER_ERROR_MSG);
@@ -137,7 +136,7 @@ function createScene () {
         SpotAPI.createSpot(spots[id]);
 
         ctx.reply(
-          "Матч успешно создан! Выберите группу для информирования о матче.",
+          message.NEW_SPOT_IS_CREATED + "Выберите группу для информирования о матче.",
           Markup.inlineKeyboard([
             Markup.urlButton(
               "Выбрать группу",
@@ -149,7 +148,6 @@ function createScene () {
         delete spots[id]; // Удаляем информацию из "типа кэша".
         return ctx.scene.leave();
       } catch (e) {
-        logger.error("Can't create spot, cause of:", e);
         ctx.reply(message.USER_ERROR_MSG);
         return ctx.wizard.back();
       }
