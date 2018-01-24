@@ -14,6 +14,7 @@ let schema = new Schema({
   price:        String,
   location:     String,
   paymentInfo:  String,
+  hashL         String,
   notifyStatus: {
     type:    String,
     enum:    [
@@ -39,6 +40,10 @@ Spot.getOpenSpots = async () => {
   return await Spot.find({status: ENTRY_STATUS.OPEN});
 };
 
+Spot.getByHash = async (hash) => {
+  return await Spot.findOne({hash: hash});
+};
+
 Spot.updateNotifyStatus = async (fromID, status) => {
   return await Spot.update({fromID: fromID}, {notifyStatus: status});
 };
@@ -49,6 +54,7 @@ Spot.create = async (spot) => {
     spotTime:    spot.spotTime,
     location:    spot.location,
     sportType:   spot.sportType,
+    hash:        spot.hash,
     price:       spot.price,
     count:       spot.count, // Максимальное кол-во человек или необходимое.
     paymentInfo: spot.paymentInfo,

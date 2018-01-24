@@ -13,6 +13,10 @@ class SpotAPI {
   static async updateNotifyStatus (fromID, status) {
     return await SpotModel.updateNotifyStatus(fromID, status);
   }
+
+  static async getSpotByHash (hash) {
+    return await SpotModel.getByHash(hash);
+  }
 }
 
 module.exports = SpotAPI;
