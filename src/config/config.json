@@ -13,5 +13,8 @@
       "keepAlive": 1
     },
     "debug": false
+  },
+  "manager": {
+    "delay": 3000
   }
 }

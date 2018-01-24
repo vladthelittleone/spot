@@ -1,6 +1,7 @@
 const SpotModel = require("./models/spot");
 
 class SpotAPI {
+
   static async createSpot (spot) {
     return await SpotModel.create(spot);
   }
@@ -9,7 +10,11 @@ class SpotAPI {
     return await SpotModel.getOpenSpots();
   }
 
-  static async getSpotByHash(hash) {
+  static async updateNotifyStatus (fromID, status) {
+    return await SpotModel.updateNotifyStatus(fromID, status);
+  }
+
+  static async getSpotByHash (hash) {
     return await SpotModel.getByHash(hash);
   }
 }
