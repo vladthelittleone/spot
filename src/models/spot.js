@@ -1,5 +1,5 @@
 const mongoose = require("../utils/mongoose");
-const status = require('../utils/status');
+const status = require("../utils/status");
 
 const Schema = mongoose.Schema;
 

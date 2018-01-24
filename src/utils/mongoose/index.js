@@ -9,8 +9,8 @@ mongoose.set(
 );
 
 mongoose.set(
-  'migration',
-  process.env.NODE_ENV === 'migration'
+  "migration",
+  process.env.NODE_ENV === "migration"
 );
 
 mongoose.set(
@@ -30,12 +30,12 @@ mongoose.Promise = global.Promise;
 
 // for test and migration use
 mongoose.clean = function (done) {
-  if (mongoose.get("test") || mongoose.get('migration')) {
+  if (mongoose.get("test") || mongoose.get("migration")) {
     if (!connectPromise.done) {
       connectPromise.then(() => {
         dropCollections(done);
       }, () => {
-        logger.warn("Can't open connection.");
+        logger.warn("Can"t open connection.");
       });
     } else {
       dropCollections(done);
@@ -45,7 +45,7 @@ mongoose.clean = function (done) {
 
 const dropCollections = (done) => {
   mongoose.connection.db.dropCollection("spots", (error) => {
-    if (error) logger.warn("Collection couldn't be removed", error);
+    if (error) logger.warn("Collection couldn"t be removed", error);
     done && done();
   });
 };

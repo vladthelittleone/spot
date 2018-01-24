@@ -10,9 +10,9 @@ const config = require("../config");
 const logger = require("../utils/log")(module);
 const session = require("telegraf/session");
 const lodash = require("lodash");
-const message = require('./message');
-const moment = require('moment');
-const keyboard = require('./keyboard');
+const message = require("./message");
+const moment = require("moment");
+const keyboard = require("./keyboard");
 
 const spots = {};
 const sportTypes = config.get("sportTypes");
@@ -98,7 +98,7 @@ function createScene () {
      * Выбор места проведения матча.
      */
     (ctx) => {
-      spots[ctx.from.id].spotTime = moment(ctx.message.text, 'DD.MM.YY H:m').toISOString();
+      spots[ctx.from.id].spotTime = moment(ctx.message.text, "DD.MM.YY H:m").toISOString();
       ctx.reply("Введите место проведения матча");
       return ctx.wizard.next();
     },

@@ -1,6 +1,6 @@
 const Markup = require("telegraf/markup");
-const message = require('./message');
-const lodash = require('lodash');
+const message = require("./message");
+const lodash = require("lodash");
 
 const main = (ctx) => {
   ctx.reply("Выберите действие", Markup.keyboard([
