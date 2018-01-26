@@ -6,7 +6,7 @@ const Stage = require("telegraf/stage");
 const WizardScene = require("telegraf/scenes/wizard");
 const Components = require("./components");
 const Markup = require("telegraf/markup");
-const SpotAPI = require("../api");
+const SpotModel = require("../models/spot");
 const config = require("../config");
 const session = require("telegraf/session");
 const lodash = require("lodash");
@@ -32,12 +32,10 @@ module.exports = (bot) => {
   bot.use(stage.middleware());
 
   bot.hears(message.OPEN_SPOTS, (ctx) => {
-    SpotAPI.getOpenSpots().then((spots) => {
-      ctx.replyWithMarkdown(message.OPEN_SPOTS_LIST).then(() => {
-        for (const spot of spots) {
-          Components.replyMatch(ctx, spot);
-        }
-      });
+    SpotModel.getOpenSpots().then((spots) => {
+      for (const spot of spots) {
+        Components.replyMatch(ctx, spot);
+      }
     });
   });
 
@@ -53,12 +51,10 @@ function createScene () {
      * Выбор типа матча.
      */
     (ctx) => {
-      ctx.replyWithMarkdown(message.CREATE_SPOT).then(() => {
-        const fromID = ctx.from.id;
-        spots[ctx.from.id] = {fromID}; // инициализируем новый spot
-        keyboard.chooseSpotType(ctx, sportTypes);
-        return ctx.wizard.next();
-      });
+      const fromID = ctx.from.id;
+      spots[ctx.from.id] = {fromID}; // инициализируем новый spot
+      keyboard.chooseSpotType(ctx, sportTypes);
+      return ctx.wizard.next();
     },
 
     /**
@@ -74,11 +70,10 @@ function createScene () {
       const sportType = ctx.callbackQuery && ctx.callbackQuery.data;
       if (sportType && lodash.includes(sportTypes, sportType)) {
         spots[ctx.from.id].sportType = ctx.callbackQuery.data;
-        ctx.reply(message.INSERT_SPOT_DATE);
+        ctx.replyWithMarkdown(message.INSERT_SPOT_DATE);
         return ctx.wizard.next();
       } else {
         replyError(ctx);
-        return ctx.wizard.back();
       }
     },
 
@@ -86,9 +81,15 @@ function createScene () {
      * Выбор места проведения матча.
      */
     (ctx) => {
-      spots[ctx.from.id].spotTime = moment(ctx.message.text, "DD.MM.YY H:m").toISOString();
-      ctx.reply(message.INSERT_SPOT_LOCATION);
-      return ctx.wizard.next();
+      const time = moment(ctx.message.text, "DD.MM.YY H:m").toISOString();
+      if (time) {
+        spots[ctx.from.id].spotTime = time;
+        ctx.reply(message.INSERT_SPOT_LOCATION);
+        return ctx.wizard.next();
+      } else {
+        ctx.reply(message.USER_ERROR_MSG);
+        ctx.replyWithMarkdown("Формат: *ДД.ММ.ГГ Ч:m*");
+      }
     },
 
     /**
@@ -113,30 +114,30 @@ function createScene () {
      * Ввод информации по оплате.
      */
     (ctx) => {
-      try {
-        spots[ctx.from.id].count = Number.parseInt(ctx.message.text, 10);
+      const {text} = ctx.message;
+      const count = Number.parseInt(text, 10);
+      if (!isNaN(count)) {
+        spots[ctx.from.id].count = count;
         ctx.reply(message.INSERT_SPOT_PAYMENT_INFO);
         return ctx.wizard.next();
-      } catch (e) {
+      } else {
         ctx.reply(message.USER_ERROR_MSG);
-        return ctx.wizard.back();
       }
     },
 
     /**
      * Создание матча.
      */
-    (ctx) => {
+    async (ctx) => {
       const {id} = ctx.from;
 
       spots[id].hash = id ^ moment();
       spots[id].paymentInfo = ctx.message.text;
 
       try {
-        SpotAPI.createSpot(spots[id]);
-
+        await SpotModel.create(spots[id]);
         ctx.reply(
-          message.NEW_SPOT_IS_CREATED + "Выберите группу для информирования о матче.",
+          "Матч успешно создан! Выберите группу для информирования о матче.",
           Markup.inlineKeyboard([
             Markup.urlButton(
               "Выбрать группу",
@@ -149,7 +150,6 @@ function createScene () {
         return ctx.scene.leave();
       } catch (e) {
         ctx.reply(message.USER_ERROR_MSG);
-        return ctx.wizard.back();
       }
     }
   );

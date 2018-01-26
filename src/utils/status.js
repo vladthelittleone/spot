@@ -1,6 +1,7 @@
-const ENTRY_STATUS = {
+const SPOT_STATUS = {
   "OPEN":   "open",
-  "CLOSED": "closed"
+  "CLOSED": "closed",
+  "WAIT_GROUP": "wait_group"
 };
 
 const NOTIFY_STATUS = {
@@ -9,4 +10,4 @@ const NOTIFY_STATUS = {
   "NOT_YET_NOTIFIED":         "NOT_YET_NOTIFIED"
 };
 
-module.exports = {ENTRY_STATUS, NOTIFY_STATUS};
+module.exports = {SPOT_STATUS, NOTIFY_STATUS};
