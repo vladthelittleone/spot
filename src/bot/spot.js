@@ -5,6 +5,7 @@
 const logger = require("../utils/log")(module);
 const SpotModel = require("../models/spot");
 const Components = require("./components");
+const message = require('./message');
 
 module.exports = (bot) => {
   bot.hears(/start@SpotBBot (.+)/, async (ctx) => {
@@ -15,7 +16,7 @@ module.exports = (bot) => {
       spot.groupId = ctx.chat.id;
       if (spot) {
         await SpotModel.addGroupId(hash, spot.groupId);
-        ctx.replyWithMarkdown("*=> Создан новый матч*")
+        ctx.reply(message.NEW_SPOT_IS_CREATED)
            .then(() => Components.replyMatch(ctx, spot));
       }
     }

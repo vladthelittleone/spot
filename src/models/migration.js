@@ -1,11 +1,11 @@
-const logger = require('../utils/log')(module);
-const SpotModel = require('../models/spot');
-const mongoose = require('../utils/mongoose');
-const devSpots = require('../utils/mongoose/migration');
+const logger = require("../utils/log")(module);
+const SpotModel = require("../models/spot");
+const mongoose = require("../utils/mongoose");
+const devSpots = require("../utils/mongoose/migration");
 
 const migration = async () => {
 
-  logger.info('starting database migration');
+  logger.info("starting database migration");
 
   await mongoose.clean();
 
@@ -13,11 +13,9 @@ const migration = async () => {
     await SpotModel.create(spot);
   }
 
-  await SpotModel.getOpenSpots();
+  await mongoose.disconnect();
 
-  mongoose.disconnect();
-
-  logger.info('database migration ended');
+  logger.info("database migration ended successful");
 };
 
 migration();

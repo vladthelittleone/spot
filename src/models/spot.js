@@ -1,27 +1,33 @@
 const mongoose = require("../utils/mongoose");
+const status = require("../utils/status");
 
 const Schema = mongoose.Schema;
 const lodash = require("lodash");
 
-const SPOT_STATUS = {
-  "OPEN":       "open",
-  "CLOSED":     "closed",
-  "WAIT_GROUP": "wait_group"
-};
+const {NOTIFY_STATUS, SPOT_STATUS} = status;
 
 let schema = new Schema({
-  fromId:      Number,
-  count:       Number,
-  spotTime:    String,
-  sportType:   String,
-  created:     Date,
-  price:       String,
-  location:    String,
-  paymentInfo: String,
-  hash:        String,
+  fromID:       Number,
+  count:        Number,
+  created:      Date,
+  spotTime:     String,
+  sportType:    String,
+  price:        String,
+  location:     String,
+  paymentInfo:  String,
+  hash:         String,
   groupId:     String,
   players:     Array,
-  status:      {
+  notifyStatus: {
+    type:    String,
+    enum:    [
+      NOTIFY_STATUS.NOT_YET_NOTIFIED,
+      NOTIFY_STATUS.NOTIFIED_ONE_DAY_BEFORE,
+      NOTIFY_STATUS.NOTIFIED_ONE_HOUR_BEFORE
+    ],
+    default: NOTIFY_STATUS.NOT_YET_NOTIFIED
+  },
+  status:       {
     type:    String,
     enum:    [
       SPOT_STATUS.OPEN,
@@ -40,6 +46,10 @@ Spot.getOpenSpots = async () => {
 
 Spot.getByHash = async (hash) => {
   return await Spot.findOne({hash: hash});
+};
+
+Spot.updateNotifyStatus = async (fromID, status) => {
+  return await Spot.update({fromID: fromID}, {notifyStatus: status});
 };
 
 Spot.addPlayer = async (hash, from) => {
@@ -67,7 +77,7 @@ Spot.addGroupId = async (hash, groupId) => {
 
 Spot.create = async (spot) => {
   const group = new Spot({
-    fromId:      spot.fromId,
+    fromID:      spot.fromID,
     spotTime:    spot.spotTime,
     location:    spot.location,
     sportType:   spot.sportType,
