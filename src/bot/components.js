@@ -5,8 +5,8 @@
 const Markup = require("telegraf/markup");
 
 class Components {
-  static replyMatch(ctx, spot) {
-    const {sportType, spotTime, location, price, count, fromId} = spot;
+  static replyMatch (ctx, spot) {
+    const {sportType, spotTime, location, price, count} = spot;
     let str = "";
     str += `Вид спорта: ${sportType}\n`;
     str += `Дата проведения: ${spotTime}\n`;
@@ -15,7 +15,7 @@ class Components {
     str += `Необходимо: ${count} человек`;
     ctx.reply(
       str,
-      Markup.inlineKeyboard([Markup.callbackButton("Добавиться", fromId)]).extra()
+      Markup.inlineKeyboard([Markup.callbackButton("Добавиться", `add ${spot.hash}`)]).extra()
     );
   }
 }

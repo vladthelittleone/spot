@@ -6,7 +6,7 @@ const Stage = require("telegraf/stage");
 const WizardScene = require("telegraf/scenes/wizard");
 const Components = require("./components");
 const Markup = require("telegraf/markup");
-const SpotAPI = require("../api");
+const SpotModel = require("../models/spot");
 const config = require("../config");
 const logger = require("../utils/log")(module);
 const session = require("telegraf/session");
@@ -31,7 +31,7 @@ module.exports = (bot) => {
   bot.use(stage.middleware());
 
   bot.action("spots", (ctx) => {
-    SpotAPI.getOpenSpots().then((spots) => {
+    SpotModel.getOpenSpots().then((spots) => {
       ctx.replyWithMarkdown("*=> Список доступных матчей*").then(() => {
         for (const spot of spots) {
           Components.replyMatch(ctx, spot);
@@ -74,7 +74,6 @@ function createScene () {
         return ctx.wizard.next();
       } else {
         ctx.reply("Что-то пошло не так, попробуйте еще раз!");
-        return ctx.wizard.back();
       }
     },
 
@@ -109,36 +108,40 @@ function createScene () {
      * Ввод информации по оплате.
      */
     (ctx) => {
-      try {
-        spots[ctx.from.id].count = Number.parseInt(ctx.message.text, 10);
+      const {text} = ctx.message;
+      const count = Number.parseInt(text, 10);
+      if (!isNaN(count)) {
+        spots[ctx.from.id].count = count;
         ctx.reply("Введите доп. информацию по оплате");
         return ctx.wizard.next();
-      } catch (e) {
+      } else {
         ctx.reply("Что-то пошло не так, попробуйте еще раз!");
-        return ctx.wizard.back();
       }
     },
 
     /**
      * Создание матча.
      */
-    (ctx) => {
+    async (ctx) => {
       const {id} = ctx.from;
       spots[id].hash = id ^ moment();
       spots[id].paymentInfo = ctx.message.text;
       try {
-        SpotAPI.createSpot(spots[id]);
-
+        await SpotModel.create(spots[id]);
         ctx.reply(
           "Матч успешно создан! Выберите группу для информирования о матче.",
-          Markup.inlineKeyboard([Markup.urlButton("Выбрать группу", `https://telegram.me/SpotBBot?startgroup=${spots[id].hash}`)]).extra()
+          Markup.inlineKeyboard([
+            Markup.urlButton(
+              "Выбрать группу",
+              `https://telegram.me/SpotBBot?startgroup=${spots[id].hash}`
+            )
+          ]).extra()
         );
         delete spots[id]; // Удаляем информацию из "типа кэша".
         return ctx.scene.leave();
       } catch (e) {
         logger.error("Can't create group, cause of:", e);
         ctx.reply("Что-то пошло не так, попробуйте еще раз!");
-        return ctx.wizard.back();
       }
     }
   );
