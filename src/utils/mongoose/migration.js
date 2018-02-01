@@ -1,6 +1,6 @@
 module.exports = [
   {
-    fromID:      179071944,
+    fromID:      1,
     spotTime:    "2018-01-24T05:00:00",
     location:    "ул. Передовиков, д. 13, к. 1",
     sportType:   "Футбол",

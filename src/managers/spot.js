@@ -14,18 +14,35 @@ class SpotManager {
 
     for (const spot of spots) {
 
-      const {spotTime, fromID, notifyStatus} = spot,
+      const {spotTime, fromID, players, notifyStatus} = spot,
         diff = moment(spotTime, moment.ISO_8601).diff(moment(), "hours");
 
       if (diff <= 24 && diff >= 0 && notifyStatus === NOTIFY_STATUS.NOT_YET_NOTIFIED) {
-        await send(fromID, message.NOTIFIED_ONE_DAY_BEFORE);
-        await SpotModel.updateNotifyStatus(fromID, NOTIFY_STATUS.NOTIFIED_ONE_DAY_BEFORE);
+        await notify(
+          fromID,
+          players,
+          message.NOTIFIED_ONE_DAY_BEFORE,
+          NOTIFY_STATUS.NOTIFIED_ONE_DAY_BEFORE
+        );
       } else if (diff <= 1 && diff >= 0 && notifyStatus === NOTIFY_STATUS.NOTIFIED_ONE_DAY_BEFORE) {
-        await send(fromID, message.NOTIFIED_ONE_HOUR_BEFORE);
-        await SpotModel.updateNotifyStatus(fromID, NOTIFY_STATUS.NOTIFIED_ONE_HOUR_BEFORE);
+        await notify(
+          fromID,
+          players,
+          message.NOTIFIED_ONE_HOUR_BEFORE,
+          NOTIFY_STATUS.NOTIFIED_ONE_HOUR_BEFORE
+        );
       }
     }
   }
 }
+
+const notify = async (from, players, message, nextStatus) => {
+
+  for (const player of players) {
+    await send(player.id, message);
+  }
+
+  await SpotModel.updateNotifyStatus(from, nextStatus);
+};
 
 module.exports = SpotManager;
