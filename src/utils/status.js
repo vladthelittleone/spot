@@ -1,6 +1,6 @@
 const SPOT_STATUS = {
-  "OPEN":   "open",
-  "CLOSED": "closed",
+  "OPEN":       "open",
+  "CLOSED":     "closed",
   "WAIT_GROUP": "wait_group"
 };
 

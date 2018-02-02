@@ -16,8 +16,8 @@ let schema = new Schema({
   location:     String,
   paymentInfo:  String,
   hash:         String,
-  groupId:     String,
-  players:     Array,
+  groupId:      String,
+  players:      Array,
   notifyStatus: {
     type:    String,
     enum:    [
@@ -40,6 +40,20 @@ let schema = new Schema({
 
 const Spot = mongoose.model("spot", schema);
 
+Spot.removeSpot = async (hash) => {
+  return await Spot.findOneAndRemove({hash: hash});
+};
+
+Spot.removePlayer = async (hash, from) => {
+  return await Spot.findOneAndUpdate(
+    {hash: hash},
+    {
+      $pull:  {"players": from},
+      status: SPOT_STATUS.OPEN
+    }
+  );
+};
+
 Spot.getOpenSpots = async () => {
   return await Spot.find({status: SPOT_STATUS.OPEN});
 };
@@ -52,14 +66,32 @@ Spot.updateNotifyStatus = async (fromID, status) => {
   return await Spot.update({fromID: fromID}, {notifyStatus: status});
 };
 
+Spot.getCurrentSpot = async (fromId) => {
+  const spots = await Spot.find();
+  for (const spot of spots) {
+    for (const player of spot.players) {
+      if (player.id === fromId) {
+        return spot;
+      }
+    }
+  }
+};
+
+Spot.getByFromID = async (fromID) => {
+  return await Spot.findOne({fromID: fromID});
+};
+
 Spot.addPlayer = async (hash, from) => {
   const spot = await Spot.getByHash(hash);
   const isFull = spot && spot.count <= spot.players.length;
-  if (!isFull && !lodash.includes(spot.players, from)) {
+  const index = lodash.findIndex(spot.players, (p) => p.id === from.id);
+  if (!isFull && index === -1) {
+    const isFull = spot.count <= spot.players.length + 1;
     return await Spot.findOneAndUpdate(
       {hash: hash},
       {
-        $push: {"players": from}
+        $push:  {"players": from},
+        status: isFull ? SPOT_STATUS.CLOSED : SPOT_STATUS.OPEN
       }
     );
   }

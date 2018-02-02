@@ -12,7 +12,6 @@ const session = require("telegraf/session");
 const lodash = require("lodash");
 const message = require("./message");
 const moment = require("moment");
-const keyboard = require("./keyboard");
 
 const spots = {};
 const sportTypes = config.get("sportTypes");
@@ -31,15 +30,57 @@ module.exports = (bot) => {
   bot.use(session());
   bot.use(stage.middleware());
 
+  bot.hears(message.REMOVE_ACTIVE_SPOT, async (ctx) => {
+    const {from} = ctx;
+    const spot = await SpotModel.getCurrentSpot(from.id);
+    if (!spot) {
+      ctx.reply(message.NO_ACTIVE_SPOT);
+      return;
+    }
+    if (spot.fromID === from.id && spot.players.length === 1) {
+      await SpotModel.removeSpot(spot.hash);
+      ctx.reply(message.MATCH_REMOVE_SUCCESS);
+      bot.telegram.sendMessage(spot.groupId, "Текущий матч был удален");
+    } else {
+      await SpotModel.removePlayer(spot.hash, from);
+      ctx.reply(message.PLAYER_REOMVE_SUCCESS);
+      let str = '';
+      str += `${from.first_name} ${from.last_name} вышел из матча.\n`;
+      str += `👎 ${spot.players.length - 1} / ${spot.count}`;
+      bot.telegram.sendMessage(spot.groupId, str);
+    }
+  });
+
   bot.hears(message.OPEN_SPOTS, (ctx) => {
     SpotModel.getOpenSpots().then((spots) => {
+      if (!spots.length) {
+        ctx.reply(message.NO_ACTIVE_SPOTS);
+      }
       for (const spot of spots) {
-        Components.replyMatch(ctx, spot);
+        Components.showMatch(ctx, spot);
       }
     });
   });
 
-  bot.hears(message.CREATE_SPOT, (ctx) => ctx.scene.enter("create"));
+  bot.hears(message.CREATE_SPOT, async (ctx) => {
+    const spot = await SpotModel.getByFromID(ctx.from.id);
+    if (!spot) {
+      ctx.scene.enter("create")
+    } else {
+      ctx.reply(message.SPOT_ALREADY_CREATED);
+      Components.showMatch(ctx, spot);
+    }
+  });
+
+  bot.hears(message.CURRENT_SPOT, async (ctx) => {
+    const {from} = ctx;
+    const spot = await SpotModel.getCurrentSpot(from.id);
+    if (spot) {
+      Components.showMatch(ctx, spot);
+    } else {
+      ctx.reply(message.NO_ACTIVE_SPOT);
+    }
+  });
 };
 
 function createScene () {
@@ -53,7 +94,7 @@ function createScene () {
     (ctx) => {
       const fromID = ctx.from.id;
       spots[ctx.from.id] = {fromID}; // инициализируем новый spot
-      keyboard.chooseSpotType(ctx, sportTypes);
+      Components.chooseSpotType(ctx, sportTypes);
       return ctx.wizard.next();
     },
 
@@ -64,7 +105,7 @@ function createScene () {
 
       const replyError = (ctx) => {
         ctx.reply(message.USER_ERROR_MSG);
-        keyboard.chooseSpotType(ctx, sportTypes);
+        Components.chooseSpotType(ctx, sportTypes);
       };
 
       const sportType = ctx.callbackQuery && ctx.callbackQuery.data;
@@ -129,13 +170,15 @@ function createScene () {
      * Создание матча.
      */
     async (ctx) => {
-      const {id} = ctx.from;
+      const {from} = ctx;
+      const {id} = from;
 
       spots[id].hash = id ^ moment();
       spots[id].paymentInfo = ctx.message.text;
 
       try {
         await SpotModel.create(spots[id]);
+        await SpotModel.addPlayer(spots[id].hash, from);
         ctx.reply(
           "Матч успешно создан! Выберите группу для информирования о матче.",
           Markup.inlineKeyboard([
