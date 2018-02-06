@@ -1,12 +1,12 @@
 const Telegraf = require("telegraf");
 const config = require("../config");
-const keyboard = require("./keyboard");
+const Components = require("./components");
 const logger = require("../utils/log")(module);
 
 const bot = new Telegraf(config.get("telegram:token"));
 
 bot.start((ctx) => {
-  keyboard.main(ctx);
+  Components.chooseMainAction(ctx);
 });
 
 require("./spot")(bot);
