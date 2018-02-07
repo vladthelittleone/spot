@@ -50,7 +50,7 @@ module.exports = (bot) => {
 
     if (spot.fromID === from.id) {
       const randomPlayer = spot.players[0];
-      await  SpotModel.updateSpotFromID(spot.fromID, randomPlayer.id);
+      await SpotModel.updateSpotFromID(spot.fromID, randomPlayer.id);
     }
 
     let str = '';
