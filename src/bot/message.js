@@ -1,10 +1,14 @@
 const moment = require('moment');
 
-const notifyMessage = (spot, interval) => `Ваш матч по \`${spot.sportType}\` 
-на \`${spot.location}\` 
-стартует через *${interval === 'day' ? '24 часа' : '1 час'}*. 
-Информация об оплате: \`${spot.paymentInfo}\` | \`${spot.price}Р\`. 
-Точное время: \`${moment(spot.spotTime).format('MMMM Do YYYY, h:mm:ss a')}\`.`;
+const notifyMessage = (spot, interval) => {
+  let str = "";
+  str += `Ваш матч по \`${spot.sportType}\``;
+  str += `на \`${spot.location}\``;
+  str += `стартует через *${interval === 'day' ? '24 часа' : '1 час'}*.`;
+  str += ` Информация об оплате: \`${spot.paymentInfo}\` | \`${spot.price}Р\`.`;
+  str += ` Точное время: \`${moment(spot.spotTime).format('MMMM Do YYYY, h:mm:ss a')}\`.`;
+  return str;
+};
 
 const spotInfo = (spot) => {
   const {sportType, spotTime, location, price, count, players} = spot;

@@ -42,7 +42,6 @@ module.exports = (bot) => {
 
   bot.command('next', async (ctx) => {
     const groupID = ctx.update.message.chat.id;
-
     SpotModel.getSpotByGroupID(groupID)
              .then((spot) => bot.telegram.sendMessage(groupID, message.SPOT_INFO(spot)));
   });
