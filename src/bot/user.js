@@ -133,7 +133,6 @@ function createScene () {
     (ctx) => {
       const time = moment(ctx.message.text, "DD.MM.YY H:m").toISOString();
       if (time) {
-        console.log(moment(time, moment.ISO_8601).diff(moment(), "hours"));
         if (moment(time, moment.ISO_8601).diff(moment(), "hours") < 0) {
           ctx.reply(message.USER_ERROR_MSG);
           ctx.reply(message.CANNOT_USE_PAST_TIME);
