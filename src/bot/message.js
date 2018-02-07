@@ -1,8 +1,16 @@
+const moment = require('moment');
+
+const notifyMessage = (spot, interval) => `Ваш матч по \`${spot.sportType}\` 
+на \`${spot.location}\` 
+стартует через *${interval === 'day' ? '24 часа' : '1 час'}*. 
+Информация об оплате: \`${spot.paymentInfo}\` | \`${spot.price}Р\`. 
+Точное время: \`${moment(spot.spotTime).format('MMMM Do YYYY, h:mm:ss a')}\`.`;
+
 module.exports.OPEN_SPOTS = "Список доступных матчей";
 module.exports.CREATE_SPOT = "Создать матч";
 module.exports.USER_ERROR_MSG = "Что-то пошло не так, попробуйте еще раз!";
-module.exports.NOTIFIED_ONE_HOUR_BEFORE = "Ваш матч стартует через *час*";
-module.exports.NOTIFIED_ONE_DAY_BEFORE = "Ваш матч стартует через *24 часа*";
+module.exports.NOTIFIED_ONE_HOUR_BEFORE = (spot) => notifyMessage(spot, 'hour');
+module.exports.NOTIFIED_ONE_DAY_BEFORE = (spot) => notifyMessage(spot, 'day');
 module.exports.NEW_SPOT_IS_CREATED = "Создан новый матч";
 module.exports.INSERT_SPOT_DATE = "Введите дату проведения матча в формате: *01.01.14 14:40*";
 module.exports.INSERT_SPOT_LOCATION = "Введите место проведения матча";

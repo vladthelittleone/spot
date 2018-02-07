@@ -21,14 +21,14 @@ class SpotManager {
         await notify(
           fromID,
           players,
-          message.NOTIFIED_ONE_DAY_BEFORE,
+          message.NOTIFIED_ONE_DAY_BEFORE(spot),
           NOTIFY_STATUS.NOTIFIED_ONE_DAY_BEFORE
         );
       } else if (diff <= 1 && diff >= 0 && notifyStatus === NOTIFY_STATUS.NOTIFIED_ONE_DAY_BEFORE) {
         await notify(
           fromID,
           players,
-          message.NOTIFIED_ONE_HOUR_BEFORE,
+          message.NOTIFIED_ONE_HOUR_BEFORE(spot),
           NOTIFY_STATUS.NOTIFIED_ONE_HOUR_BEFORE
         );
       }
