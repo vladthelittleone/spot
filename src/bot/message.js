@@ -46,3 +46,4 @@ module.exports.SPOT_ALREADY_ACTIVE = "Вы уже были добавлены в
 module.exports.NO_ACTIVE_SPOTS = "Нет активных матчей";
 module.exports.MATCH_REMOVE_SUCCESS = "Созданный вами матч был удален";
 module.exports.PLAYER_REMOVE_SUCCESS = "Вы были удалены из матча";
+module.exports.CANNOT_USE_PAST_TIME = "Нельзя использовать прошлое время!";
