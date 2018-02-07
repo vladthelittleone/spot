@@ -82,6 +82,10 @@ Spot.getCurrentSpot = async (fromId) => {
   }
 };
 
+Spot.getSpotByGroupID = async (id) => {
+  return await Spot.findOne({groupID: id});
+};
+
 Spot.getByFromID = async (fromID) => {
   return await Spot.findOne({fromID: fromID});
 };

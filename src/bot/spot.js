@@ -40,6 +40,13 @@ module.exports = (bot) => {
     }
   });
 
+  bot.command('next', async (ctx) => {
+    const groupID = ctx.update.message.chat.id;
+
+    SpotModel.getSpotByGroupID(groupID)
+             .then((spot) => bot.telegram.sendMessage(groupID, message.SPOT_INFO(spot)));
+  });
+
   bot.action(/add (.+)/, async (ctx) => {
     if (ctx.chat.type === "group") {
       const {match, from} = ctx;
@@ -69,7 +76,7 @@ module.exports = (bot) => {
         );
       } else {
         ctx.reply(message.SPOT_ALREADY_ACTIVE);
-        Components.showMatch(ctx, currentSpot)
+        Components.showMatch(ctx, currentSpot);
       }
     }
   });

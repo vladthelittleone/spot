@@ -6,6 +6,20 @@ const notifyMessage = (spot, interval) => `Ваш матч по \`${spot.sportTy
 Информация об оплате: \`${spot.paymentInfo}\` | \`${spot.price}Р\`. 
 Точное время: \`${moment(spot.spotTime).format('MMMM Do YYYY, h:mm:ss a')}\`.`;
 
+const spotInfo = (spot) => {
+  const {sportType, spotTime, location, price, count, players} = spot;
+
+  let str = "";
+  str += `Вид спорта: ${sportType}\n`;
+  str += `Дата проведения: ${moment(spotTime).format("DD.MM.YY H:m")}\n`;
+  str += `Место проведения: ${location}\n`;
+  str += `Цена: ${price}\n`;
+  str += `Необходимо: ${count} человек\n`;
+  str += `Собрано: ${players.length} человек`;
+  return str;
+};
+
+module.exports.SPOT_INFO = (spot) => spotInfo(spot);
 module.exports.OPEN_SPOTS = "Список доступных матчей";
 module.exports.CREATE_SPOT = "Создать матч";
 module.exports.USER_ERROR_MSG = "Что-то пошло не так, попробуйте еще раз!";

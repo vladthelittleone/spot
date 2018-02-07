@@ -2,23 +2,15 @@
  * @since 24.01.2018
  * @author Skurishin Vladislav
  */
+
 const Markup = require("telegraf/markup");
-const moment = require("moment");
 const message = require("./message");
 const lodash = require("lodash");
 
 class Components {
   static showMatch (ctx, spot) {
-    const {sportType, spotTime, location, price, count, players} = spot;
-    let str = "";
-    str += `Вид спорта: ${sportType}\n`;
-    str += `Дата проведения: ${moment(spotTime).format("DD.MM.YY H:m")}\n`;
-    str += `Место проведения: ${location}\n`;
-    str += `Цена: ${price}\n`;
-    str += `Необходимо: ${count} человек\n`;
-    str += `Собрано: ${players.length} человек`;
     ctx.reply(
-      str,
+      message.SPOT_INFO(spot),
       Markup.inlineKeyboard([Markup.callbackButton("Добавиться", `add ${spot.hash}`)]).extra()
     );
   }
