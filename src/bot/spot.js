@@ -29,13 +29,13 @@ module.exports = (bot) => {
     if (ctx.message.contact) {
       const phone = ctx.message.contact.phone_number;
       if (spots[from.id]) {
-        const {groupId} = spots[from.id];
+        const {groupID} = spots[from.id];
         await bot.telegram.sendMessage(
-          groupId,
+          groupID,
           message.NEW_PLAYER_WANTS_TO_ADD,
           {parse_mode: "Markdown"}
         );
-        await bot.telegram.sendContact(groupId, phone, `${from.first_name} ${from.last_name}`);
+        await bot.telegram.sendContact(groupID, phone, `${from.first_name} ${from.last_name}`);
       }
     }
   });
@@ -43,7 +43,9 @@ module.exports = (bot) => {
   bot.command('next', async (ctx) => {
     const groupID = ctx.update.message.chat.id;
     SpotModel.getSpotByGroupID(groupID)
-             .then((spot) => bot.telegram.sendMessage(groupID, message.SPOT_INFO(spot)));
+             .then((spot) => {
+               bot.telegram.sendMessage(groupID, message.SPOT_INFO(spot));
+             });
   });
 
   bot.action(/add (.+)/, async (ctx) => {

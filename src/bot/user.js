@@ -32,6 +32,7 @@ module.exports = (bot) => {
 
   bot.hears(message.REMOVE_ACTIVE_SPOT, async (ctx) => {
     const {from} = ctx;
+
     const spot = await SpotModel.getCurrentSpot(from.id);
     if (!spot) {
       ctx.reply(message.NO_ACTIVE_SPOT);
@@ -40,15 +41,21 @@ module.exports = (bot) => {
     if (spot.fromID === from.id && spot.players.length === 1) {
       await SpotModel.removeSpot(spot.hash);
       ctx.reply(message.MATCH_REMOVE_SUCCESS);
-      bot.telegram.sendMessage(spot.groupId, "Текущий матч был удален");
-    } else {
-      await SpotModel.removePlayer(spot.hash, from);
-      ctx.reply(message.PLAYER_REOMVE_SUCCESS);
-      let str = '';
-      str += `${from.first_name} ${from.last_name} вышел из матча.\n`;
-      str += `👎 ${spot.players.length - 1} / ${spot.count}`;
-      bot.telegram.sendMessage(spot.groupId, str);
+      bot.telegram.sendMessage(spot.groupID, "Текущий матч был удален");
+      return;
     }
+
+    if (spot.fromID === from.id) {
+      const randomPlayer = spot.players.filter((p) => p.id !== spot.fromID)[0];
+      await  SpotModel.updateSpotFromID(spot.fromID, randomPlayer.id);
+    }
+
+    await SpotModel.removePlayer(spot.hash, from);
+    ctx.reply(message.PLAYER_REMOVE_SUCCESS);
+    let str = '';
+    str += `${from.first_name} ${from.last_name} вышел из матча.\n`;
+    str += `👎 ${spot.players.length - 1} / ${spot.count}`;
+    bot.telegram.sendMessage(spot.groupID, str);
   });
 
   bot.hears(message.OPEN_SPOTS, (ctx) => {
@@ -65,7 +72,7 @@ module.exports = (bot) => {
   bot.hears(message.CREATE_SPOT, async (ctx) => {
     const spot = await SpotModel.getByFromID(ctx.from.id);
     if (!spot) {
-      ctx.scene.enter("create")
+      ctx.scene.enter("create");
     } else {
       ctx.reply(message.SPOT_ALREADY_CREATED);
       Components.showMatch(ctx, spot);
