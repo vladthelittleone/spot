@@ -17,16 +17,19 @@ class SpotManager {
       const {spotTime, fromID, players, notifyStatus} = spot,
         diff = moment(spotTime, moment.ISO_8601).diff(moment(), "hours");
 
+      const is24hBeforeMatch = diff <= 24 && diff >= 0,
+        is1hBeforeMatch = diff <= 1 && diff >= 0;
+
       if (diff <= -1) {
         await SpotModel.removeSpot(spot.hash);
-      } else if (diff <= 24 && diff >= 0 && notifyStatus === NOTIFY_STATUS.NOT_YET_NOTIFIED) {
+      } else if (is24hBeforeMatch && notifyStatus === NOTIFY_STATUS.NOT_YET_NOTIFIED) {
         await notify(
           fromID,
           players,
           message.NOTIFIED_ONE_DAY_BEFORE(spot),
           NOTIFY_STATUS.NOTIFIED_ONE_DAY_BEFORE
         );
-      } else if (diff <= 1 && diff >= 0 && notifyStatus === NOTIFY_STATUS.NOTIFIED_ONE_DAY_BEFORE) {
+      } else if (is1hBeforeMatch && notifyStatus === NOTIFY_STATUS.NOTIFIED_ONE_DAY_BEFORE) {
         await notify(
           fromID,
           players,
