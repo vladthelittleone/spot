@@ -16,7 +16,7 @@ let schema = new Schema({
   location:     String,
   paymentInfo:  String,
   hash:         String,
-  groupId:      String,
+  groupID:      String,
   players:      Array,
   notifyStatus: {
     type:    String,
@@ -63,18 +63,25 @@ Spot.getByHash = async (hash) => {
 };
 
 Spot.updateNotifyStatus = async (fromID, status) => {
-  return await Spot.update({fromID: fromID}, {notifyStatus: status});
+  return await Spot.findOneAndUpdate(
+    {fromID: fromID},
+    {notifyStatus: status}
+  );
 };
 
-Spot.getCurrentSpot = async (fromId) => {
+Spot.getCurrentSpot = async (fromID) => {
   const spots = await Spot.find();
   for (const spot of spots) {
     for (const player of spot.players) {
-      if (player.id === fromId) {
+      if (player.id === fromID) {
         return spot;
       }
     }
   }
+};
+
+Spot.getSpotByGroupID = async (id) => {
+  return await Spot.findOne({groupID: id});
 };
 
 Spot.getByFromID = async (fromID) => {
@@ -97,13 +104,20 @@ Spot.addPlayer = async (hash, from) => {
   }
 };
 
-Spot.addGroupId = async (hash, groupId) => {
+Spot.addGroupID = async (hash, groupID) => {
   return await Spot.findOneAndUpdate(
     {hash: hash},
     {
-      groupId,
+      groupID,
       status: SPOT_STATUS.OPEN
     }
+  );
+};
+
+Spot.updateSpotFromID = async (fromID, newID) => {
+  return await Spot.findOneAndUpdate(
+    {fromID: fromID},
+    {fromID: newID}
   );
 };
 

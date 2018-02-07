@@ -15,6 +15,6 @@
     "debug": false
   },
   "manager": {
-    "delay": 3000
+    "delay": 3600000
   }
 }
