@@ -1,10 +1,12 @@
 const moment = require('moment');
 
+const getIntervalHours = (interval) => interval === 'day' ? '24 часа' : '1 час';
+
 const notifyMessage = (spot, interval) => {
   let str = "";
   str += `Ваш матч по \`${spot.sportType}\``;
   str += `на \`${spot.location}\``;
-  str += `стартует через *${interval === 'day' ? '24 часа' : '1 час'}*.`;
+  str += `стартует через *${getIntervalHours(interval)}*.`;
   str += ` Информация об оплате: \`${spot.paymentInfo}\` | \`${spot.price}Р\`.`;
   str += ` Точное время: \`${moment(spot.spotTime).format('MMMM Do YYYY, h:mm:ss a')}\`.`;
   return str;

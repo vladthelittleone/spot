@@ -11,8 +11,7 @@
     "watch": "./node_modules/.bin/esw --watch",
     "lint": "./node_modules/.bin/esw",
     "test": "NODE_PATH=. NODE_ENV=test mocha --recursive --timeout 200000 --exit",
-    "migration": "NODE_PATH=./src NODE_ENV=migration node ./src/models/migration.js",
-    "clear": "NODE_PATH=./src NODE_ENV=migration node ./src/models/clear.js"
+    "migration": "NODE_PATH=./src NODE_ENV=migration node ./src/models/migration.js"
   },
   "dependencies": {
     "lodash": "^4.17.4",

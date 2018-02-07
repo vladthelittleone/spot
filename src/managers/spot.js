@@ -17,7 +17,9 @@ class SpotManager {
       const {spotTime, fromID, players, notifyStatus} = spot,
         diff = moment(spotTime, moment.ISO_8601).diff(moment(), "hours");
 
-      if (diff <= 24 && diff >= 0 && notifyStatus === NOTIFY_STATUS.NOT_YET_NOTIFIED) {
+      if (diff <= -1) {
+        await SpotModel.removeSpot(spot.hash);
+      } else if (diff <= 24 && diff >= 0 && notifyStatus === NOTIFY_STATUS.NOT_YET_NOTIFIED) {
         await notify(
           fromID,
           players,

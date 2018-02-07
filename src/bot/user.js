@@ -45,16 +45,18 @@ module.exports = (bot) => {
       return;
     }
 
+    await SpotModel.removePlayer(spot.hash, from);
+    ctx.reply(message.PLAYER_REMOVE_SUCCESS);
+
     if (spot.fromID === from.id) {
-      const randomPlayer = spot.players.filter((p) => p.id !== spot.fromID)[0];
+      const randomPlayer = spot.players[0];
       await  SpotModel.updateSpotFromID(spot.fromID, randomPlayer.id);
     }
 
-    await SpotModel.removePlayer(spot.hash, from);
-    ctx.reply(message.PLAYER_REMOVE_SUCCESS);
     let str = '';
     str += `${from.first_name} ${from.last_name} вышел из матча.\n`;
     str += `👎 ${spot.players.length - 1} / ${spot.count}`;
+
     bot.telegram.sendMessage(spot.groupID, str);
   });
 
