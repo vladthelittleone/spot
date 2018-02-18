@@ -7,29 +7,29 @@ const lodash = require("lodash");
 const {NOTIFY_STATUS, SPOT_STATUS} = status;
 
 let schema = new Schema({
-  fromID:       Number,
-  count:        Number,
-  created:      Date,
-  spotTime:     String,
-  sportType:    String,
-  price:        String,
-  location:     String,
-  paymentInfo:  String,
-  hash:         String,
-  groupID:      String,
-  players:      Array,
+  fromID: Number,
+  count: Number,
+  created: Date,
+  spotTime: String,
+  sportType: String,
+  price: String,
+  location: Object,
+  paymentInfo: String,
+  hash: String,
+  groupID: String,
+  players: Array,
   notifyStatus: {
-    type:    String,
-    enum:    [
+    type: String,
+    enum: [
       NOTIFY_STATUS.NOT_YET_NOTIFIED,
       NOTIFY_STATUS.NOTIFIED_ONE_DAY_BEFORE,
       NOTIFY_STATUS.NOTIFIED_ONE_HOUR_BEFORE
     ],
     default: NOTIFY_STATUS.NOT_YET_NOTIFIED
   },
-  status:       {
-    type:    String,
-    enum:    [
+  status: {
+    type: String,
+    enum: [
       SPOT_STATUS.OPEN,
       SPOT_STATUS.CLOSED,
       SPOT_STATUS.WAIT_GROUP
@@ -48,8 +48,11 @@ Spot.removePlayer = async (hash, from) => {
   return await Spot.findOneAndUpdate(
     {hash: hash},
     {
-      $pull:  {"players": from},
+      $pull: {"players": from},
       status: SPOT_STATUS.OPEN
+    },
+    {
+      new: true
     }
   );
 };
@@ -97,7 +100,7 @@ Spot.addPlayer = async (hash, from) => {
     return await Spot.findOneAndUpdate(
       {hash: hash},
       {
-        $push:  {"players": from},
+        $push: {"players": from},
         status: isFull ? SPOT_STATUS.CLOSED : SPOT_STATUS.OPEN
       }
     );
@@ -123,16 +126,16 @@ Spot.updateSpotFromID = async (fromID, newID) => {
 
 Spot.create = async (spot) => {
   const group = new Spot({
-    fromID:      spot.fromID,
-    spotTime:    spot.spotTime,
-    location:    spot.location,
-    sportType:   spot.sportType,
-    hash:        spot.hash,
-    price:       spot.price,
-    count:       spot.count, // Максимальное кол-во человек или необходимое.
+    fromID: spot.fromID,
+    spotTime: spot.spotTime,
+    location: spot.location,
+    sportType: spot.sportType,
+    hash: spot.hash,
+    price: spot.price,
+    count: spot.count, // Максимальное кол-во человек или необходимое.
     paymentInfo: spot.paymentInfo,
-    created:     Date.now(),
-    players:     []
+    created: Date.now(),
+    players: []
   });
 
   return await group.save();

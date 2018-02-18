@@ -8,7 +8,7 @@ const {NOTIFY_STATUS} = status;
 
 class SpotManager {
 
-  static async execute () {
+  static async execute() {
 
     const spots = await SpotModel.getOpenSpots();
 

@@ -18,7 +18,7 @@ module.exports = (bot) => {
       if (spot) {
         await SpotModel.addGroupID(hash, spot.groupID);
         ctx.reply(message.NEW_SPOT_IS_CREATED)
-           .then(() => Components.showMatch(ctx, spot));
+          .then(() => Components.showMatch(bot, ctx, spot));
       }
     }
   });
@@ -43,9 +43,11 @@ module.exports = (bot) => {
   bot.command('next', async (ctx) => {
     const groupID = ctx.update.message.chat.id;
     SpotModel.getSpotByGroupID(groupID)
-             .then((spot) => {
-               bot.telegram.sendMessage(groupID, message.SPOT_INFO(spot));
-             });
+      .then((spot) => {
+        const {latitude, longitude} = spot.location;
+        bot.telegram.sendLocation(groupID, latitude, longitude);
+        bot.telegram.sendMessage(groupID, message.SPOT_INFO(spot));
+      });
   });
 
   bot.action(/add (.+)/, async (ctx) => {
@@ -77,7 +79,7 @@ module.exports = (bot) => {
         );
       } else {
         ctx.reply(message.SPOT_ALREADY_ACTIVE);
-        Components.showMatch(ctx, currentSpot);
+        Components.showMatch(bot, ctx, currentSpot);
       }
     }
   });

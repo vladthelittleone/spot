@@ -45,19 +45,20 @@ module.exports = (bot) => {
       return;
     }
 
-    await SpotModel.removePlayer(spot.hash, from);
+    const updated = await SpotModel.removePlayer(spot.hash, from);
+
     ctx.reply(message.PLAYER_REMOVE_SUCCESS);
 
-    if (spot.fromID === from.id) {
-      const randomPlayer = spot.players[0];
-      await SpotModel.updateSpotFromID(spot.fromID, randomPlayer.id);
+    if (updated.fromID === from.id) {
+      const randomPlayer = updated.players[0];
+      await SpotModel.updateSpotFromID(updated.fromID, randomPlayer.id);
     }
 
     let str = '';
     str += `${from.first_name} ${from.last_name} вышел из матча.\n`;
-    str += `👎 ${spot.players.length - 1} / ${spot.count}`;
+    str += `👎 ${updated.players.length} / ${updated.count}`;
 
-    bot.telegram.sendMessage(spot.groupID, str);
+    bot.telegram.sendMessage(updated.groupID, str);
   });
 
   bot.hears(message.OPEN_SPOTS, (ctx) => {
@@ -66,7 +67,7 @@ module.exports = (bot) => {
         ctx.reply(message.NO_ACTIVE_SPOTS);
       }
       for (const spot of spots) {
-        Components.showMatch(ctx, spot);
+        Components.showMatch(bot, ctx, spot);
       }
     });
   });
@@ -77,7 +78,7 @@ module.exports = (bot) => {
       ctx.scene.enter("create");
     } else {
       ctx.reply(message.SPOT_ALREADY_CREATED);
-      Components.showMatch(ctx, spot);
+      Components.showMatch(bot, ctx, spot);
     }
   });
 
@@ -85,14 +86,14 @@ module.exports = (bot) => {
     const {from} = ctx;
     const spot = await SpotModel.getCurrentSpot(from.id);
     if (spot) {
-      Components.showMatch(ctx, spot);
+      Components.showMatch(bot, ctx, spot);
     } else {
       ctx.reply(message.NO_ACTIVE_SPOT);
     }
   });
 };
 
-function createScene () {
+function createScene() {
 
   return new WizardScene(
     "create",
@@ -127,6 +128,7 @@ function createScene () {
       }
     },
 
+
     /**
      * Выбор места проведения матча.
      */
@@ -138,7 +140,7 @@ function createScene () {
           ctx.reply(message.CANNOT_USE_PAST_TIME);
         }
         spots[ctx.from.id].spotTime = time;
-        ctx.reply(message.INSERT_SPOT_LOCATION);
+        ctx.reply(message.CHOOSE_GEOLOCATION);
         return ctx.wizard.next();
       } else {
         ctx.reply(message.USER_ERROR_MSG);
@@ -146,11 +148,12 @@ function createScene () {
       }
     },
 
+
     /**
      * Ввод цены за человека.
      */
     (ctx) => {
-      spots[ctx.from.id].location = ctx.message.text;
+      spots[ctx.from.id].location = ctx.message.location;
       ctx.reply(message.INSERT_SPOT_COST);
       return ctx.wizard.next();
     },

@@ -8,14 +8,18 @@ const message = require("./message");
 const lodash = require("lodash");
 
 class Components {
-  static showMatch (ctx, spot) {
-    ctx.reply(
-      message.SPOT_INFO(spot),
-      Markup.inlineKeyboard([Markup.callbackButton("Добавиться", `add ${spot.hash}`)]).extra()
-    );
+  static showMatch(bot, ctx, spot) {
+    const {latitude, longitude} = spot.location;
+    bot.telegram.sendLocation(ctx.chat.id, latitude, longitude)
+      .then(() => {
+        ctx.reply(
+          message.SPOT_INFO(spot),
+          Markup.inlineKeyboard([Markup.callbackButton("Добавиться", `add ${spot.hash}`)]).extra()
+        );
+      });
   }
 
-  static chooseMainAction (ctx) {
+  static chooseMainAction(ctx) {
     ctx.reply("Выберите действие", Markup.keyboard([
       [message.OPEN_SPOTS],
       [message.CREATE_SPOT],
@@ -24,7 +28,7 @@ class Components {
     ]).resize().extra());
   }
 
-  static chooseSpotType (ctx, sportTypes) {
+  static chooseSpotType(ctx, sportTypes) {
     const keyboard = lodash.map(sportTypes, (s) => Markup.callbackButton(s, s));
     ctx.reply(
       "Введите тип спортвного матча.",

@@ -16,9 +16,10 @@
   "dependencies": {
     "lodash": "^4.17.4",
     "moment": "^2.20.1",
+    "mongo": "^0.1.0",
     "mongoose": "^5.0.1",
     "nconf": "^0.10.0",
-    "telegraf": "^3.17.5",
+    "telegraf": "^3.17.7",
     "winston": "^2.4.0"
   },
   "devDependencies": {
