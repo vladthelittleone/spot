@@ -8,17 +8,19 @@ const notifyMessage = (spot, interval) => {
   str += `стартует через *${getIntervalHours(interval)}*.`;
   str += ` Информация об оплате: *${spot.paymentInfo}* | *${spot.price}Р*.`;
   str += ` Точное время: *${moment(spot.spotTime).format('MMMM Do YYYY, h:mm:ss a')}*.`;
+  str += ` Адрес проведения: ${spot.locationText}`;
   return str;
 };
 
 const spotInfo = (spot) => {
-  const {sportType, spotTime, price, count, players} = spot;
+  const {sportType, spotTime, price, count, players, locationText} = spot;
   let str = "";
   str += `Вид спорта: ${sportType}\n`;
   str += `Дата проведения: ${moment(spotTime).format("DD.MM.YY H:m")}\n`;
   str += `Цена: ${price}\n`;
   str += `Необходимо: ${count} человек\n`;
-  str += `Собрано: ${players.length} человек`;
+  str += `Собрано: ${players.length} человек\n`;
+  str += `Адрес проведения: ${locationText}`;
   return str;
 };
 
@@ -44,5 +46,5 @@ module.exports.NO_ACTIVE_SPOTS = "Нет активных матчей";
 module.exports.MATCH_REMOVE_SUCCESS = "Созданный вами матч был удален";
 module.exports.PLAYER_REMOVE_SUCCESS = "Вы были удалены из матча";
 module.exports.CANNOT_USE_PAST_TIME = "Нельзя использовать прошлое время!";
-module.exports.CHOOSE_GEOLOCATION = "Выберите геолокацию";
-module.exports.SPOT_GEOLOCATION = "Расположение поля";
+module.exports.CHOOSE_GEOLOCATION = "Выберите геолокацию(нажмите: Скрепка -> Локация(location))";
+module.exports.INSERT_TEXT_SPOT_LOCATION = "Введите адрес места проведения в формате: ул.Казанская, д.14";

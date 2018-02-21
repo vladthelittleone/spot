@@ -154,6 +154,16 @@ function createScene() {
      */
     (ctx) => {
       spots[ctx.from.id].location = ctx.message.location;
+      ctx.reply(message.INSERT_TEXT_SPOT_LOCATION);
+      return ctx.wizard.next();
+    },
+
+    /**
+     * Ввод адеса проведения матча текстом.
+     */
+
+    (ctx) => {
+      spots[ctx.from.id].locationText = ctx.message.text;
       ctx.reply(message.INSERT_SPOT_COST);
       return ctx.wizard.next();
     },
@@ -166,6 +176,7 @@ function createScene() {
       ctx.reply(message.INSERT_SPOT_MEMBERS);
       return ctx.wizard.next();
     },
+
 
     /**
      * Ввод информации по оплате.

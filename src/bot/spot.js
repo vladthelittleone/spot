@@ -45,8 +45,8 @@ module.exports = (bot) => {
     SpotModel.getSpotByGroupID(groupID)
       .then((spot) => {
         const {latitude, longitude} = spot.location;
-        bot.telegram.sendLocation(groupID, latitude, longitude);
-        bot.telegram.sendMessage(groupID, message.SPOT_INFO(spot));
+        bot.telegram.sendLocation(groupID, latitude, longitude)
+          .then(bot.telegram.sendMessage(groupID, message.SPOT_INFO(spot)));
       });
   });
 

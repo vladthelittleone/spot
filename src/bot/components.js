@@ -31,7 +31,7 @@ class Components {
   static chooseSpotType(ctx, sportTypes) {
     const keyboard = lodash.map(sportTypes, (s) => Markup.callbackButton(s, s));
     ctx.reply(
-      "Введите тип спортвного матча.",
+      "Введите тип спортивного матча.",
       Markup.inlineKeyboard(keyboard).extra()
     );
   }
