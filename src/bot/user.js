@@ -38,10 +38,10 @@ module.exports = (bot) => {
       ctx.reply(message.NO_ACTIVE_SPOT);
       return;
     }
-    if (spot.fromID === from.id && spot.players.length === 1) {
+    if (spot.fromId === from.id && spot.players.length === 1) {
       await SpotModel.removeSpot(spot.hash);
       ctx.reply(message.MATCH_REMOVE_SUCCESS);
-      bot.telegram.sendMessage(spot.groupID, "Текущий матч был удален");
+      bot.telegram.sendMessage(spot.groupId, "Текущий матч был удален");
       return;
     }
 
@@ -49,16 +49,16 @@ module.exports = (bot) => {
 
     ctx.reply(message.PLAYER_REMOVE_SUCCESS);
 
-    if (updated.fromID === from.id) {
+    if (updated.fromId === from.id) {
       const randomPlayer = updated.players[0];
-      await SpotModel.updateSpotFromID(updated.fromID, randomPlayer.id);
+      await SpotModel.updateSpotFromId(updated.fromId, randomPlayer.id);
     }
 
     let str = '';
     str += `${from.first_name} ${from.last_name} вышел из матча.\n`;
     str += `👎 ${updated.players.length} / ${updated.count}`;
 
-    bot.telegram.sendMessage(updated.groupID, str);
+    bot.telegram.sendMessage(updated.groupId, str);
   });
 
   bot.hears(message.OPEN_SPOTS, (ctx) => {
@@ -67,18 +67,18 @@ module.exports = (bot) => {
         ctx.reply(message.NO_ACTIVE_SPOTS);
       }
       for (const spot of spots) {
-        Components.showMatch(bot, ctx, spot);
+        Components.sendMatch(ctx, spot);
       }
     });
   });
 
   bot.hears(message.CREATE_SPOT, async (ctx) => {
-    const spot = await SpotModel.getByFromID(ctx.from.id);
+    const spot = await SpotModel.getByFromId(ctx.from.id);
     if (!spot) {
       ctx.scene.enter("create");
     } else {
       ctx.reply(message.SPOT_ALREADY_CREATED);
-      Components.showMatch(bot, ctx, spot);
+      Components.sendMatch(ctx, spot);
     }
   });
 
@@ -86,14 +86,14 @@ module.exports = (bot) => {
     const {from} = ctx;
     const spot = await SpotModel.getCurrentSpot(from.id);
     if (spot) {
-      Components.showMatch(bot, ctx, spot);
+      Components.sendMatch(ctx, spot);
     } else {
       ctx.reply(message.NO_ACTIVE_SPOT);
     }
   });
 };
 
-function createScene() {
+function createScene () {
 
   return new WizardScene(
     "create",
@@ -102,8 +102,8 @@ function createScene() {
      * Выбор типа матча.
      */
     (ctx) => {
-      const fromID = ctx.from.id;
-      spots[ctx.from.id] = {fromID}; // инициализируем новый spot
+      const fromId = ctx.from.id;
+      spots[ctx.from.id] = {fromId}; // инициализируем новый spot
       Components.chooseSpotType(ctx, sportTypes);
       return ctx.wizard.next();
     },
@@ -128,7 +128,6 @@ function createScene() {
       }
     },
 
-
     /**
      * Выбор места проведения матча.
      */
@@ -140,7 +139,7 @@ function createScene() {
           ctx.reply(message.CANNOT_USE_PAST_TIME);
         }
         spots[ctx.from.id].spotTime = time;
-        ctx.reply(message.CHOOSE_GEOLOCATION);
+        ctx.replyWithMarkdown(message.INSERT_SPOT_LOCATION);
         return ctx.wizard.next();
       } else {
         ctx.reply(message.USER_ERROR_MSG);
@@ -148,22 +147,15 @@ function createScene() {
       }
     },
 
-
     /**
      * Ввод цены за человека.
      */
     (ctx) => {
-      spots[ctx.from.id].location = ctx.message.location;
-      ctx.reply(message.INSERT_TEXT_SPOT_LOCATION);
-      return ctx.wizard.next();
-    },
-
-    /**
-     * Ввод адеса проведения матча текстом.
-     */
-
-    (ctx) => {
-      spots[ctx.from.id].locationText = ctx.message.text;
+      if (ctx.message.location) {
+        spots[ctx.from.id].location = ctx.message.location;
+      } else {
+        spots[ctx.from.id].locationText = ctx.message.text;
+      }
       ctx.reply(message.INSERT_SPOT_COST);
       return ctx.wizard.next();
     },
@@ -176,7 +168,6 @@ function createScene() {
       ctx.reply(message.INSERT_SPOT_MEMBERS);
       return ctx.wizard.next();
     },
-
 
     /**
      * Ввод информации по оплате.

@@ -3,7 +3,7 @@ const config = require("../config/index");
 
 class JobManager {
 
-  static start(manager, delay) {
+  static start (manager, delay) {
 
     mongoose.connection.on("open", () => {
 
@@ -18,7 +18,7 @@ class JobManager {
     });
   }
 
-  static stop(manager) {
+  static stop (manager) {
 
     manager.interval && clearInterval(manager.interval);
   }
