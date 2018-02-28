@@ -18,7 +18,7 @@ module.exports = (bot) => {
       if (spot) {
         await SpotModel.addGroupId(hash, spot.groupId);
         ctx.reply(message.NEW_SPOT_IS_CREATED)
-           .then(() => Components.sendMa(ctx, spot));
+           .then(() => Components.sendMatch(ctx, spot));
       }
     }
   });
