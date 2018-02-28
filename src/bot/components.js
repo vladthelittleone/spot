@@ -1,17 +1,28 @@
-/**
- * @since 24.01.2018
- * @author Skurishin Vladislav
- */
-
+const bot = require("./index");
 const Markup = require("telegraf/markup");
 const message = require("./message");
 const lodash = require("lodash");
 
 class Components {
-  static showMatch (ctx, spot) {
+  static sendLocation (chatId, location) {
+    const {latitude, longitude} = location;
+    return bot.telegram.sendLocation(chatId, latitude, longitude);
+  }
+
+  static sendMatch (ctx, spot) {
+    if (spot.location) {
+      this.sendLocation(ctx.chat.id, spot.location)
+          .then(() => this.sendSpotInfo(ctx, spot));
+    } else {
+      this.sendSpotInfo(ctx, spot);
+    }
+  }
+
+  static sendSpotInfo (ctx, spot) {
     ctx.reply(
       message.SPOT_INFO(spot),
-      Markup.inlineKeyboard([Markup.callbackButton("Добавиться", `add ${spot.hash}`)]).extra()
+      Markup.inlineKeyboard([Markup.callbackButton("Добавиться", `add ${spot.hash}`)])
+            .extra()
     );
   }
 
@@ -27,7 +38,7 @@ class Components {
   static chooseSpotType (ctx, sportTypes) {
     const keyboard = lodash.map(sportTypes, (s) => Markup.callbackButton(s, s));
     ctx.reply(
-      "Введите тип спортвного матча.",
+      "Введите тип спортивного матча.",
       Markup.inlineKeyboard(keyboard).extra()
     );
   }

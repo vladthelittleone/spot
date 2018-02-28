@@ -5,23 +5,22 @@ const getIntervalHours = (interval) => interval === 'day' ? '24 часа' : '1 �
 const notifyMessage = (spot, interval) => {
   let str = "";
   str += `Ваш матч по *${spot.sportType}*`;
-  str += `на *${spot.location}*`;
   str += `стартует через *${getIntervalHours(interval)}*.`;
   str += ` Информация об оплате: *${spot.paymentInfo}* | *${spot.price}Р*.`;
   str += ` Точное время: *${moment(spot.spotTime).format('MMMM Do YYYY, h:mm:ss a')}*.`;
+  str += spot.locationText ? `Адрес проведения: ${spot.locationText}` : '';
   return str;
 };
 
 const spotInfo = (spot) => {
-  const {sportType, spotTime, location, price, count, players} = spot;
-
+  const {sportType, spotTime, price, count, players, locationText} = spot;
   let str = "";
   str += `Вид спорта: ${sportType}\n`;
   str += `Дата проведения: ${moment(spotTime).format("DD.MM.YY H:m")}\n`;
-  str += `Место проведения: ${location}\n`;
   str += `Цена: ${price}\n`;
   str += `Необходимо: ${count} человек\n`;
-  str += `Собрано: ${players.length} человек`;
+  str += `Собрано: ${players.length} человек\n`;
+  str += locationText ? `Адрес проведения: ${locationText}` : '';
   return str;
 };
 
@@ -33,7 +32,7 @@ module.exports.NOTIFIED_ONE_HOUR_BEFORE = (spot) => notifyMessage(spot, 'hour');
 module.exports.NOTIFIED_ONE_DAY_BEFORE = (spot) => notifyMessage(spot, 'day');
 module.exports.NEW_SPOT_IS_CREATED = "Создан новый матч";
 module.exports.INSERT_SPOT_DATE = "Введите дату проведения матча в формате: *01.01.14 14:40*";
-module.exports.INSERT_SPOT_LOCATION = "Введите место проведения матча";
+module.exports.INSERT_SPOT_LOCATION = "Введите место проведения (вы можете сделать это через геолокацию (нажмите: *Скрепка -> Локация(location)*))";
 module.exports.INSERT_SPOT_COST = "Введите цену за одного человека";
 module.exports.INSERT_SPOT_MEMBERS = "Введите количество человек";
 module.exports.INSERT_SPOT_PAYMENT_INFO = "Введите доп. информацию по оплате";
