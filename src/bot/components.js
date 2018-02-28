@@ -1,25 +1,32 @@
-/**
- * @since 24.01.2018
- * @author Skurishin Vladislav
- */
-
+const bot = require("./index");
 const Markup = require("telegraf/markup");
 const message = require("./message");
 const lodash = require("lodash");
 
 class Components {
-  static showMatch(bot, ctx, spot) {
-    const {latitude, longitude} = spot.location;
-    bot.telegram.sendLocation(ctx.chat.id, latitude, longitude)
-      .then(() => {
-        ctx.reply(
-          message.SPOT_INFO(spot),
-          Markup.inlineKeyboard([Markup.callbackButton("Добавиться", `add ${spot.hash}`)]).extra()
-        );
-      });
+  static sendLocation (chatId, location) {
+    const {latitude, longitude} = location;
+    return bot.telegram.sendLocation(chatId, latitude, longitude);
   }
 
-  static chooseMainAction(ctx) {
+  static sendMatch (ctx, spot) {
+    if (spot.location) {
+      this.sendLocation(ctx.chat.id, spot.location)
+          .then(() => this.sendSpotInfo(ctx, spot));
+    } else {
+      this.sendSpotInfo(ctx, spot);
+    }
+  }
+
+  static sendSpotInfo (ctx, spot) {
+    ctx.reply(
+      message.SPOT_INFO(spot),
+      Markup.inlineKeyboard([Markup.callbackButton("Добавиться", `add ${spot.hash}`)])
+            .extra()
+    );
+  }
+
+  static chooseMainAction (ctx) {
     ctx.reply("Выберите действие", Markup.keyboard([
       [message.OPEN_SPOTS],
       [message.CREATE_SPOT],
@@ -28,7 +35,7 @@ class Components {
     ]).resize().extra());
   }
 
-  static chooseSpotType(ctx, sportTypes) {
+  static chooseSpotType (ctx, sportTypes) {
     const keyboard = lodash.map(sportTypes, (s) => Markup.callbackButton(s, s));
     ctx.reply(
       "Введите тип спортивного матча.",

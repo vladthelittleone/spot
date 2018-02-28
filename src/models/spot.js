@@ -7,30 +7,30 @@ const lodash = require("lodash");
 const {NOTIFY_STATUS, SPOT_STATUS} = status;
 
 let schema = new Schema({
-  fromID: Number,
-  count: Number,
-  created: Date,
-  spotTime: String,
-  sportType: String,
-  price: String,
-  location: Object,
+  fromId:       Number,
+  count:        Number,
+  created:      Date,
+  spotTime:     String,
+  sportType:    String,
+  price:        String,
+  location:     Object,
   locationText: String,
-  paymentInfo: String,
-  hash: String,
-  groupID: String,
-  players: Array,
+  paymentInfo:  String,
+  hash:         String,
+  groupId:      String,
+  players:      Array,
   notifyStatus: {
-    type: String,
-    enum: [
+    type:    String,
+    enum:    [
       NOTIFY_STATUS.NOT_YET_NOTIFIED,
       NOTIFY_STATUS.NOTIFIED_ONE_DAY_BEFORE,
       NOTIFY_STATUS.NOTIFIED_ONE_HOUR_BEFORE
     ],
     default: NOTIFY_STATUS.NOT_YET_NOTIFIED
   },
-  status: {
-    type: String,
-    enum: [
+  status:       {
+    type:    String,
+    enum:    [
       SPOT_STATUS.OPEN,
       SPOT_STATUS.CLOSED,
       SPOT_STATUS.WAIT_GROUP
@@ -49,7 +49,7 @@ Spot.removePlayer = async (hash, from) => {
   return await Spot.findOneAndUpdate(
     {hash: hash},
     {
-      $pull: {"players": from},
+      $pull:  {"players": from},
       status: SPOT_STATUS.OPEN
     },
     {
@@ -66,30 +66,30 @@ Spot.getByHash = async (hash) => {
   return await Spot.findOne({hash: hash});
 };
 
-Spot.updateNotifyStatus = async (fromID, status) => {
+Spot.updateNotifyStatus = async (fromId, status) => {
   return await Spot.findOneAndUpdate(
-    {fromID: fromID},
+    {fromId: fromId},
     {notifyStatus: status}
   );
 };
 
-Spot.getCurrentSpot = async (fromID) => {
+Spot.getCurrentSpot = async (fromId) => {
   const spots = await Spot.find();
   for (const spot of spots) {
     for (const player of spot.players) {
-      if (player.id === fromID) {
+      if (player.id === fromId) {
         return spot;
       }
     }
   }
 };
 
-Spot.getSpotByGroupID = async (id) => {
-  return await Spot.findOne({groupID: id});
+Spot.getSpotByGroupId = async (id) => {
+  return await Spot.findOne({groupId: id});
 };
 
-Spot.getByFromID = async (fromID) => {
-  return await Spot.findOne({fromID: fromID});
+Spot.getByFromId = async (fromId) => {
+  return await Spot.findOne({fromId: fromId});
 };
 
 Spot.addPlayer = async (hash, from) => {
@@ -101,45 +101,44 @@ Spot.addPlayer = async (hash, from) => {
     return await Spot.findOneAndUpdate(
       {hash: hash},
       {
-        $push: {"players": from},
+        $push:  {"players": from},
         status: isFull ? SPOT_STATUS.CLOSED : SPOT_STATUS.OPEN
       }
     );
   }
 };
 
-Spot.addGroupID = async (hash, groupID) => {
+Spot.addGroupId = async (hash, groupId) => {
   return await Spot.findOneAndUpdate(
     {hash: hash},
     {
-      groupID,
+      groupId,
       status: SPOT_STATUS.OPEN
     }
   );
 };
 
-Spot.updateSpotFromID = async (fromID, newID) => {
+Spot.updateSpotFromId = async (fromId, newId) => {
   return await Spot.findOneAndUpdate(
-    {fromID: fromID},
-    {fromID: newID}
+    {fromId: fromId},
+    {fromId: newId}
   );
 };
 
 Spot.create = async (spot) => {
   const group = new Spot({
-    fromID: spot.fromID,
-    spotTime: spot.spotTime,
-    location: spot.location,
+    fromId:       spot.fromId,
+    spotTime:     spot.spotTime,
+    location:     spot.location,
     locationText: spot.locationText,
-    sportType: spot.sportType,
-    hash: spot.hash,
-    price: spot.price,
-    count: spot.count, // Максимальное кол-во человек или необходимое.
-    paymentInfo: spot.paymentInfo,
-    created: Date.now(),
-    players: []
+    sportType:    spot.sportType,
+    hash:         spot.hash,
+    price:        spot.price,
+    count:        spot.count, // Максимальное кол-во человек или необходимое.
+    paymentInfo:  spot.paymentInfo,
+    created:      Date.now(),
+    players:      []
   });
-
   return await group.save();
 };
 

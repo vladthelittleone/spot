@@ -14,11 +14,11 @@ module.exports = (bot) => {
       const {match} = ctx;
       const hash = match[1];
       const spot = await SpotModel.getByHash(hash);
-      spot.groupID = ctx.chat.id;
+      spot.groupId = ctx.chat.id;
       if (spot) {
-        await SpotModel.addGroupID(hash, spot.groupID);
+        await SpotModel.addGroupId(hash, spot.groupId);
         ctx.reply(message.NEW_SPOT_IS_CREATED)
-          .then(() => Components.showMatch(bot, ctx, spot));
+           .then(() => Components.sendMatch(ctx, spot));
       }
     }
   });
@@ -29,38 +29,34 @@ module.exports = (bot) => {
     if (ctx.message.contact) {
       const phone = ctx.message.contact.phone_number;
       if (spots[from.id]) {
-        const {groupID} = spots[from.id];
+        const {groupId} = spots[from.id];
         await bot.telegram.sendMessage(
-          groupID,
+          groupId,
           message.NEW_PLAYER_WANTS_TO_ADD,
           {parse_mode: "Markdown"}
         );
-        await bot.telegram.sendContact(groupID, phone, `${from.first_name} ${from.last_name}`);
+        await bot.telegram.sendContact(groupId, phone, `${from.first_name} ${from.last_name}`);
       }
     }
   });
 
   bot.command('next', async (ctx) => {
-    const groupID = ctx.update.message.chat.id;
-    SpotModel.getSpotByGroupID(groupID)
-      .then((spot) => {
-        const {latitude, longitude} = spot.location;
-        bot.telegram.sendLocation(groupID, latitude, longitude)
-          .then(bot.telegram.sendMessage(groupID, message.SPOT_INFO(spot)));
-      });
+    const groupId = ctx.update.message.chat.id;
+    SpotModel.getSpotByGroupId(groupId)
+             .then((spot) => Components.sendMatch(ctx, spot));
   });
 
   bot.action(/add (.+)/, async (ctx) => {
     if (ctx.chat.type === "group") {
       const {match, from} = ctx;
-      const groupID = ctx.chat.id;
+      const groupId = ctx.chat.id;
       const hash = match[1];
       const spot = await SpotModel.addPlayer(hash, from);
       if (spot) {
         let str = '';
         str += `${from.first_name} ${from.last_name} пойдет на матч.\n`;
         str += `👍 ${spot.players.length + 1} / ${spot.count}`;
-        bot.telegram.sendMessage(groupID, str);
+        bot.telegram.sendMessage(groupId, str);
       }
     }
     if (ctx.chat.type === "private") {
@@ -79,9 +75,8 @@ module.exports = (bot) => {
         );
       } else {
         ctx.reply(message.SPOT_ALREADY_ACTIVE);
-        Components.showMatch(bot, ctx, currentSpot);
+        Components.sendMatch(ctx, currentSpot);
       }
     }
   });
 };
-
