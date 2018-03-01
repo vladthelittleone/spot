@@ -1,0 +1,12 @@
+version: '3'
+services:
+  bot:
+    container_name: bot
+    build: .
+    links:
+      - mongo
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - 27017:27017

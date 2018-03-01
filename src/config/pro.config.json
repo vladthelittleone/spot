@@ -1,0 +1,18 @@
+{
+  "telegram": {
+    "token": "334807039:AAF9UDVSl2BVdnLPYX4XxeIvZ4bWR_2FCUY"
+  },
+  "sportTypes": [
+    "Футбол",
+    "Баскетбол"
+  ],
+  "database": {
+    "uri": "mongodb://mongo/spot",
+    "options": {
+      "keepAlive": 1
+    }
+  },
+  "manager": {
+    "delay": 3600000
+  }
+}

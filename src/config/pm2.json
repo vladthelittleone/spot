@@ -5,11 +5,11 @@
       "script": "./src/app.js",
       "watch": true,
       "env": {
-        "NODE_ENV": "development",
+        "NODE_ENV": "dev",
         "NODE_PATH": "."
       },
       "env_production": {
-        "NODE_ENV": "production",
+        "NODE_ENV": "pro",
         "NODE_PATH": "."
       }
     }
