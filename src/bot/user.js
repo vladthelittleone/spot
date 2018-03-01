@@ -135,15 +135,14 @@ function createScene () {
       const time = moment(ctx.message.text, "DD.MM.YY H:m").toISOString();
       if (time) {
         if (moment(time, moment.ISO_8601).diff(moment(), "hours") < 0) {
-          ctx.reply(message.USER_ERROR_MSG);
           ctx.reply(message.CANNOT_USE_PAST_TIME);
+        } else {
+          spots[ctx.from.id].spotTime = time;
+          ctx.replyWithMarkdown(message.INSERT_SPOT_LOCATION);
+          return ctx.wizard.next();
         }
-        spots[ctx.from.id].spotTime = time;
-        ctx.replyWithMarkdown(message.INSERT_SPOT_LOCATION);
-        return ctx.wizard.next();
       } else {
-        ctx.reply(message.USER_ERROR_MSG);
-        ctx.replyWithMarkdown("Формат: *ДД.ММ.ГГ Ч:m*");
+        ctx.replyWithMarkdown("Неверный формат! Используйте следующий: *ДД.ММ.ГГ Ч:m*");
       }
     },
 

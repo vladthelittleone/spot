@@ -32,7 +32,7 @@ module.exports.NOTIFIED_ONE_HOUR_BEFORE = (spot) => notifyMessage(spot, 'hour');
 module.exports.NOTIFIED_ONE_DAY_BEFORE = (spot) => notifyMessage(spot, 'day');
 module.exports.NEW_SPOT_IS_CREATED = "Создан новый матч";
 module.exports.INSERT_SPOT_DATE = "Введите дату проведения матча в формате: *01.01.14 14:40*";
-module.exports.INSERT_SPOT_LOCATION = "Введите место проведения (вы можете сделать это через геолокацию (нажмите: *Скрепка -> Локация(location)*))";
+module.exports.INSERT_SPOT_LOCATION = "Введите место проведения. Вы можете сделать это через геолокацию! Для этого нажмите: *Скрепка -> Локация*.";
 module.exports.INSERT_SPOT_COST = "Введите цену за одного человека";
 module.exports.INSERT_SPOT_MEMBERS = "Введите количество человек";
 module.exports.INSERT_SPOT_PAYMENT_INFO = "Введите доп. информацию по оплате";
