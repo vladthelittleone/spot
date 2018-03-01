@@ -3,19 +3,20 @@ const moment = require('moment');
 const getIntervalHours = (interval) => interval === 'day' ? '24 часа' : '1 час';
 
 const notifyMessage = (spot, interval) => {
+  const {spotType, spotTime, price, paymentInfo, locationText} = spot;
   let str = "";
-  str += `Ваш матч по *${spot.sportType}*`;
+  str += `Ваш матч по *${spotType}*`;
   str += `стартует через *${getIntervalHours(interval)}*.`;
-  str += ` Информация об оплате: *${spot.paymentInfo}* | *${spot.price}Р*.`;
-  str += ` Точное время: *${moment(spot.spotTime).format('MMMM Do YYYY, h:mm:ss a')}*.`;
-  str += spot.locationText ? `Адрес проведения: ${spot.locationText}` : '';
+  str += ` Информация об оплате: *${paymentInfo}* | *${price}Р*.`;
+  str += ` Точное время: *${moment(spotTime).format('MMMM Do YYYY, h:mm:ss a')}*.`;
+  str += spot.locationText ? `Адрес проведения: ${locationText}` : '';
   return str;
 };
 
 const spotInfo = (spot) => {
-  const {sportType, spotTime, price, count, players, locationText} = spot;
+  const {spotType, spotTime, price, count, players, locationText} = spot;
   let str = "";
-  str += `Вид спорта: ${sportType}\n`;
+  str += `Вид спорта: ${spotType}\n`;
   str += `Дата проведения: ${moment(spotTime).format("DD.MM.YY H:m")}\n`;
   str += `Цена: ${price}\n`;
   str += `Необходимо: ${count} человек\n`;

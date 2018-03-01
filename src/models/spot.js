@@ -1,17 +1,15 @@
 const mongoose = require("../utils/mongoose");
-const status = require("../utils/status");
-
-const Schema = mongoose.Schema;
+const {NOTIFY_STATUS, SPOT_STATUS} = require("../bot/status");
 const lodash = require("lodash");
 
-const {NOTIFY_STATUS, SPOT_STATUS} = status;
+const Schema = mongoose.Schema;
 
 let schema = new Schema({
   fromId:       Number,
   count:        Number,
   created:      Date,
   spotTime:     String,
-  sportType:    String,
+  spotType:     String,
   price:        String,
   location:     Object,
   locationText: String,
@@ -131,7 +129,7 @@ Spot.create = async (spot) => {
     spotTime:     spot.spotTime,
     location:     spot.location,
     locationText: spot.locationText,
-    sportType:    spot.sportType,
+    spotType:     spot.spotType,
     hash:         spot.hash,
     price:        spot.price,
     count:        spot.count, // Максимальное кол-во человек или необходимое.

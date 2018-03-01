@@ -1,14 +1,12 @@
 const SpotModel = require("../models/spot");
 const moment = require("moment");
 const send = require("../bot/notification");
-const status = require("../utils/status");
+const {NOTIFY_STATUS} = require("../bot/status");
 const message = require("../bot/message");
 const Components = require("../bot/components");
 
-const {NOTIFY_STATUS} = status;
-
-class SpotManager {
-  static async execute() {
+class NotificationManager {
+  static async execute () {
     const spots = await SpotModel.getOpenSpots();
     for (const spot of spots) {
       const {spotTime, notifyStatus} = spot,
@@ -43,4 +41,4 @@ const notify = async (spot, message, nextStatus) => {
   await SpotModel.updateNotifyStatus(fromId, nextStatus);
 };
 
-module.exports = SpotManager;
+module.exports = NotificationManager;

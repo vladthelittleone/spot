@@ -7,14 +7,13 @@ const WizardScene = require("telegraf/scenes/wizard");
 const Components = require("./components");
 const Markup = require("telegraf/markup");
 const SpotModel = require("../models/spot");
-const config = require("../config");
+const {SPOT_TYPES} = require('./types');
 const session = require("telegraf/session");
 const lodash = require("lodash");
 const message = require("./message");
 const moment = require("moment");
 
 const spots = {};
-const sportTypes = config.get("sportTypes");
 
 module.exports = (bot) => {
 
@@ -104,7 +103,7 @@ function createScene () {
     (ctx) => {
       const fromId = ctx.from.id;
       spots[ctx.from.id] = {fromId}; // инициализируем новый spot
-      Components.chooseSpotType(ctx, sportTypes);
+      Components.chooseSpotType(ctx, SPOT_TYPES);
       return ctx.wizard.next();
     },
 
@@ -112,15 +111,14 @@ function createScene () {
      * Выбор времени проведения матча.
      */
     (ctx) => {
-
       const replyError = (ctx) => {
         ctx.reply(message.USER_ERROR_MSG);
-        Components.chooseSpotType(ctx, sportTypes);
+        Components.chooseSpotType(ctx, SPOT_TYPES);
       };
 
-      const sportType = ctx.callbackQuery && ctx.callbackQuery.data;
-      if (sportType && lodash.includes(sportTypes, sportType)) {
-        spots[ctx.from.id].sportType = ctx.callbackQuery.data;
+      const type = ctx.callbackQuery && ctx.callbackQuery.data;
+      if (type && lodash.includes(SPOT_TYPES, type)) {
+        spots[ctx.from.id].spotType = ctx.callbackQuery.data;
         ctx.replyWithMarkdown(message.INSERT_SPOT_DATE);
         return ctx.wizard.next();
       } else {
@@ -164,9 +162,15 @@ function createScene () {
      * Выбор количества человек.
      */
     (ctx) => {
-      spots[ctx.from.id].price = ctx.message.text;
-      ctx.reply(message.INSERT_SPOT_MEMBERS);
-      return ctx.wizard.next();
+      const {text} = ctx.message;
+      const cost = Number.parseInt(text, 10);
+      if (!isNaN(cost)) {
+        spots[ctx.from.id].price = ctx.message.text;
+        ctx.reply(message.INSERT_SPOT_MEMBERS);
+        return ctx.wizard.next();
+      } else {
+        ctx.reply(message.USER_ERROR_MSG);
+      }
     },
 
     /**

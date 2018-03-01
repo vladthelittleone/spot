@@ -2,11 +2,8 @@ const mongoose = require("../utils/mongoose");
 const config = require("../config/index");
 
 class JobManager {
-
-  static start(manager, delay) {
-
+  static start (manager, delay) {
     mongoose.connection.on("open", () => {
-
       const exec = manager.execute;
       exec && exec();
 
@@ -18,8 +15,7 @@ class JobManager {
     });
   }
 
-  static stop(manager) {
-
+  static stop (manager) {
     manager.interval && clearInterval(manager.interval);
   }
 }

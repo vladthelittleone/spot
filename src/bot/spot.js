@@ -6,6 +6,7 @@ const SpotModel = require("../models/spot");
 const Components = require("./components");
 const message = require('./message');
 const Markup = require("telegraf/markup");
+
 const spots = {};
 
 module.exports = (bot) => {

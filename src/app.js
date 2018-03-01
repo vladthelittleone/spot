@@ -1,6 +1,5 @@
 require("./bot");
 
 const manager = require("./managers");
-const SpotManager = require("./managers/spot");
-
-manager.start(SpotManager);
+const NotificationManager = require("./managers/notification");
+manager.start(NotificationManager);

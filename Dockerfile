@@ -8,4 +8,4 @@ run npm i --only=production
 
 copy . /usr/src/app
 
-cmd ["npm", "run", "node"]
+cmd ["npm", "run", "pm2"]
