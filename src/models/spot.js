@@ -57,6 +57,10 @@ Spot.removePlayer = async (hash, from) => {
   );
 };
 
+Spot.getSpots = async () => {
+  return await Spot.find({});
+};
+
 Spot.getOpenSpots = async () => {
   return await Spot.find({status: SPOT_STATUS.OPEN});
 };
