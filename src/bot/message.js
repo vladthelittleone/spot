@@ -11,9 +11,9 @@ const notifyMessage = (spot, interval) => {
 };
 
 const spotInfo = (spot) => {
-  const {spotType, spotTime, price, count, players, groupTitle, locationText} = spot;
+  const {sportType, spotTime, price, count, players, groupTitle, locationText} = spot;
   let str = "";
-  str += `Спорт: *${spotType}*\n`;
+  str += `Спорт: *${sportType}*\n`;
   str += groupTitle ? `Группа: *${groupTitle}*\n` : '';
   str += `Дата: *${getDate(spotTime)}*\n`;
   str += `Цена: *${price}*\n`;
@@ -46,6 +46,6 @@ module.exports.NO_ACTIVE_SPOTS = "Нет активных матчей";
 module.exports.MATCH_REMOVE_SUCCESS = "Созданный вами матч был удален";
 module.exports.PLAYER_REMOVE_SUCCESS = "Вы были удалены из матча";
 module.exports.CANNOT_USE_PAST_TIME = "Нельзя использовать прошлое время!";
-module.exports.CANNOT_CREATE_SPOT_FOR_ONE = 'Нельзя создавать мачт для самого себя!';
+module.exports.CANNOT_CREATE_SPOT_FOR_ONE = 'Нельзя создавать мачт для одного человека!';
 module.exports.INCORRECT_DATE_FORMAT = "Неверный формат! Используйте следующий: *ДД.ММ.ГГ Ч:М*";
-module.exports.SPOT_HAS_BEEN_CREATEED = "Матч успешно создан! Выберите группу для информирования о матче.";
+module.exports.SPOT_HAS_BEEN_CREATEED = "Матч успешно создан! Выберите группу для информирования о матче";

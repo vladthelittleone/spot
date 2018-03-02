@@ -9,7 +9,7 @@ let schema = new Schema({
   count:        Number,
   created:      Date,
   spotTime:     String,
-  spotType:     String,
+  sportType:    String,
   price:        String,
   location:     Object,
   locationText: String,
@@ -48,7 +48,8 @@ Spot.removePlayer = async (hash, from) => {
   return await Spot.findOneAndUpdate(
     {hash: hash},
     {
-      $pull: {"players": from}
+      $pull:  {"players": from},
+      status: SPOT_STATUS.OPEN
     },
     {
       new: true
@@ -75,7 +76,9 @@ Spot.getCurrentSpot = async (fromId) => {
   const spots = await Spot.find();
   for (const spot of spots) {
     for (const player of spot.players) {
-      if (player.id === fromId) return spot;
+      if (player.id === fromId) {
+        return spot;
+      }
     }
   }
 };
@@ -128,7 +131,7 @@ Spot.create = async (spot) => {
     spotTime:     spot.spotTime,
     location:     spot.location,
     locationText: spot.locationText,
-    spotType:     spot.spotType,
+    sportType:    spot.sportType,
     hash:         spot.hash,
     price:        spot.price,
     count:        spot.count, // insert max human at spot

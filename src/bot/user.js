@@ -7,7 +7,7 @@ const WizardScene = require("telegraf/scenes/wizard");
 const Components = require("./components");
 const Markup = require("telegraf/markup");
 const SpotModel = require("../models/spot");
-const {SPOT_TYPES} = require('./types');
+const {SPORT_TYPES} = require('./types');
 const session = require("telegraf/session");
 const lodash = require("lodash");
 const message = require("./message");
@@ -104,7 +104,7 @@ function createScene () {
     (ctx) => {
       const fromId = ctx.from.id;
       spots[ctx.from.id] = {fromId}; // initialize new spot at cache
-      Components.chooseSpotType(ctx, SPOT_TYPES);
+      Components.chooseSportType(ctx, SPORT_TYPES);
       return ctx.wizard.next();
     },
 
@@ -114,12 +114,12 @@ function createScene () {
     (ctx) => {
       const replyError = (ctx) => {
         ctx.reply(message.USER_ERROR_MSG);
-        Components.chooseSpotType(ctx, SPOT_TYPES);
+        Components.chooseSportType(ctx, SPORT_TYPES);
       };
 
       const type = ctx.callbackQuery && ctx.callbackQuery.data;
-      if (type && lodash.includes(SPOT_TYPES, type)) {
-        spots[ctx.from.id].spotType = ctx.callbackQuery.data;
+      if (type && lodash.includes(SPORT_TYPES, type)) {
+        spots[ctx.from.id].sportType = ctx.callbackQuery.data;
         ctx.replyWithMarkdown(message.INSERT_SPOT_DATE);
         return ctx.wizard.next();
       } else {
@@ -179,7 +179,7 @@ function createScene () {
     (ctx) => {
       const {text} = ctx.message;
       const count = Number.parseInt(text, 10);
-      if (!isNaN(count)) {
+      if (!isNaN(count) && count > 0) {
         spots[ctx.from.id].count = count;
         ctx.reply(message.INSERT_SPOT_PAYMENT_INFO);
         return ctx.wizard.next();
