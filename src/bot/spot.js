@@ -46,6 +46,21 @@ module.exports = (bot) => {
              .then((spot) => Components.sendMatch(ctx, spot));
   });
 
+  bot.command('/stop@SpotBBot', async (ctx) => {
+    const groupId = ctx.update.message.chat.id;
+    const spot = await SpotModel.getSpotByGroupId(groupId);
+    const admins = await ctx.getChatAdministrators();
+    if (!admins.find((admin) => admin.user.id === ctx.from.id)) {
+      return ctx.replyWithMarkdown(message.YOU_ARE_NOT_ADMIN(ctx.from.first_name));
+    }
+    if (spot) {
+      await SpotModel.removeSpot(spot.hash);
+      ctx.replyWithMarkdown(message.CURRENT_SPOT_HAS_BEEN_REMOVED);
+    } else {
+      ctx.replyWithMarkdown(message.GROUP_DONT_HAVE_ACTIVE_SPOT);
+    }
+  });
+
   bot.action(/add (.+)/, async (ctx) => {
     if (ctx.chat.type === "group") {
       const {match, from} = ctx;
