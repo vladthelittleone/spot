@@ -6,7 +6,7 @@ const lodash = require("lodash");
 class Components {
   static sendLocation (chatId, location) {
     const {latitude, longitude} = location;
-    return bot.telegram.sendLocation(chatId, latitude, longitude);
+    return chatId && bot.telegram.sendLocation(chatId, latitude, longitude);
   }
 
   static sendMatch (ctx, spot) {
@@ -19,7 +19,7 @@ class Components {
   }
 
   static sendSpotInfo (ctx, spot) {
-    ctx.reply(
+    ctx.replyWithMarkdown(
       message.SPOT_INFO(spot),
       Markup.inlineKeyboard([Markup.callbackButton("Добавиться", `add ${spot.hash}`)])
             .extra()

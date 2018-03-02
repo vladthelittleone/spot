@@ -40,7 +40,8 @@ module.exports = (bot) => {
     if (spot.fromId === from.id && spot.players.length === 1) {
       await SpotModel.removeSpot(spot.hash);
       ctx.reply(message.MATCH_REMOVE_SUCCESS);
-      bot.telegram.sendMessage(spot.groupId, "Текущий матч был удален");
+      spot.groupId &&
+      bot.telegram.sendMessage(spot.groupId, message.CURRENT_SPOT_HAS_BEEN_REMOVED);
       return;
     }
 
@@ -140,7 +141,7 @@ function createScene () {
           return ctx.wizard.next();
         }
       } else {
-        ctx.replyWithMarkdown("Неверный формат! Используйте следующий: *ДД.ММ.ГГ Ч:М*");
+        ctx.replyWithMarkdown(message.INCORRECT_DATE_FORMAT);
       }
     },
 
@@ -182,6 +183,8 @@ function createScene () {
         spots[ctx.from.id].count = count;
         ctx.reply(message.INSERT_SPOT_PAYMENT_INFO);
         return ctx.wizard.next();
+      } else if (count === 1) {
+        ctx.reply(message.CANNOT_CREATE_SPOT_FOR_ONE);
       } else {
         ctx.reply(message.USER_ERROR_MSG);
       }
@@ -201,8 +204,8 @@ function createScene () {
         await SpotModel.create(spots[id]);
         await SpotModel.addPlayer(spots[id].hash, from);
         ctx.reply(
-          "Матч успешно создан! Выберите группу для информирования о матче.",
           Markup.inlineKeyboard([
+            message.SPOT_HAS_BEEN_CREATEED,
             Markup.urlButton(
               "Выбрать группу",
               `https://telegram.me/SpotBBot?startgroup=${spots[id].hash}`

@@ -9,10 +9,10 @@ class NotificationManager {
   static async execute () {
     const spots = await SpotModel.getOpenSpots();
     for (const spot of spots) {
-      const {spotTime, notifyStatus} = spot,
-        diff = moment(spotTime, moment.ISO_8601).diff(moment(), "hours");
-      const is24hBeforeMatch = diff <= 24 && diff >= 0,
-        is1hBeforeMatch = diff <= 1 && diff >= 0;
+      const {spotTime, notifyStatus} = spot;
+      const diff = moment(spotTime, moment.ISO_8601).diff(moment(), "hours");
+      const is24hBeforeMatch = diff <= 24 && diff >= 0;
+      const is1hBeforeMatch = diff <= 1 && diff >= 0;
       if (diff <= -1) {
         await SpotModel.removeSpot(spot.hash);
       } else if (is24hBeforeMatch && notifyStatus === NOTIFY_STATUS.NOT_YET_NOTIFIED) {
@@ -33,11 +33,13 @@ class NotificationManager {
 }
 
 const notify = async (spot, message, nextStatus) => {
-  const {players, location, fromId} = spot;
+  const {players, groupId, location, fromId} = spot;
   for (const player of players) {
-    if (location) await Components.sendLocation(player.id, location);
+    location && await Components.sendLocation(player.id, location);
     await send(player.id, message);
   }
+  location && await Components.sendLocation(groupId, location);
+  await send(groupId, message);
   await SpotModel.updateNotifyStatus(fromId, nextStatus);
 };
 

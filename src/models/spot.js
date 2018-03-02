@@ -48,8 +48,7 @@ Spot.removePlayer = async (hash, from) => {
   return await Spot.findOneAndUpdate(
     {hash: hash},
     {
-      $pull:  {"players": from},
-      status: SPOT_STATUS.OPEN
+      $pull: {"players": from}
     },
     {
       new: true
@@ -76,9 +75,7 @@ Spot.getCurrentSpot = async (fromId) => {
   const spots = await Spot.find();
   for (const spot of spots) {
     for (const player of spot.players) {
-      if (player.id === fromId) {
-        return spot;
-      }
+      if (player.id === fromId) return spot;
     }
   }
 };
