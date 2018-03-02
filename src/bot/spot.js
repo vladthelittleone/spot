@@ -1,5 +1,5 @@
 /**
- * Здесь выполняем логику связанную с группой.
+ * here execute logic with group
  */
 
 const SpotModel = require("../models/spot");

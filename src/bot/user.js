@@ -1,5 +1,5 @@
 /**
- * Здесь выполняем логику связанную с пользователем.
+ * here execute logic with user
  */
 
 const Stage = require("telegraf/stage");
@@ -17,13 +17,13 @@ const spots = {};
 
 module.exports = (bot) => {
 
-  // Сцена создания нового матча.
+  // create scene about new spot
   const create = createScene();
 
-  // Create scene manager
+  // create scene manager
   const stage = new Stage();
 
-  // Scene registration
+  // scene registration
   stage.register(create);
 
   bot.use(session());
@@ -98,17 +98,17 @@ function createScene () {
     "create",
 
     /**
-     * Выбор типа матча.
+     * initialize spot
      */
     (ctx) => {
       const fromId = ctx.from.id;
-      spots[ctx.from.id] = {fromId}; // инициализируем новый spot
+      spots[ctx.from.id] = {fromId}; // initialize new spot at cache
       Components.chooseSpotType(ctx, SPOT_TYPES);
       return ctx.wizard.next();
     },
 
     /**
-     * Выбор времени проведения матча.
+     * choose spot type
      */
     (ctx) => {
       const replyError = (ctx) => {
@@ -127,7 +127,7 @@ function createScene () {
     },
 
     /**
-     * Выбор места проведения матча.
+     * choose spot time
      */
     (ctx) => {
       const time = moment(ctx.message.text, "DD.MM.YY HH:mm");
@@ -145,7 +145,7 @@ function createScene () {
     },
 
     /**
-     * Ввод цены за человека.
+     * insert or upload location
      */
     (ctx) => {
       if (ctx.message.location) {
@@ -158,7 +158,7 @@ function createScene () {
     },
 
     /**
-     * Выбор количества человек.
+     * insert cost by one human
      */
     (ctx) => {
       const {text} = ctx.message;
@@ -173,7 +173,7 @@ function createScene () {
     },
 
     /**
-     * Ввод информации по оплате.
+     * insert max human at spot
      */
     (ctx) => {
       const {text} = ctx.message;
@@ -188,7 +188,7 @@ function createScene () {
     },
 
     /**
-     * Создание матча.
+     * insert payment info and create spot
      */
     async (ctx) => {
       const {from} = ctx;
@@ -210,7 +210,7 @@ function createScene () {
           ]).extra()
         );
 
-        delete spots[id]; // Удаляем информацию из "типа кэша".
+        delete spots[id]; // delete spot from cache
         return ctx.scene.leave();
       } catch (e) {
         ctx.reply(message.USER_ERROR_MSG);

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const config = require("../../config");
 const logger = require("../log")(module);
 
-// флаг для определения - является ли текущей коннект тестовым
+// flag for set test mongo uri
 mongoose.set(
   "test",
   process.env.NODE_ENV === "test"

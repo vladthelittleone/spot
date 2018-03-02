@@ -132,7 +132,7 @@ Spot.create = async (spot) => {
     spotType:     spot.spotType,
     hash:         spot.hash,
     price:        spot.price,
-    count:        spot.count, // Максимальное кол-во человек или необходимое.
+    count:        spot.count, // insert max human at spot
     paymentInfo:  spot.paymentInfo,
     created:      Date.now(),
     players:      []
