@@ -10,6 +10,8 @@ class Components {
   }
 
   static sendMatch (ctx, spot) {
+    if (!spot) return ctx.replyWithMarkdown(message.GROUP_DONT_HAVE_ACTIVE_SPOT);
+
     if (spot.location) {
       this.sendLocation(ctx.chat.id, spot.location)
           .then(() => this.sendSpotInfo(ctx, spot));
