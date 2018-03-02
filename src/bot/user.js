@@ -135,7 +135,7 @@ function createScene () {
         if (time.diff(moment()) < 0) {
           ctx.reply(message.CANNOT_USE_PAST_TIME);
         } else {
-          spots[ctx.from.id].spotTime = time;
+          spots[ctx.from.id].spotTime = time.toISOString();
           ctx.replyWithMarkdown(message.INSERT_SPOT_LOCATION);
           return ctx.wizard.next();
         }

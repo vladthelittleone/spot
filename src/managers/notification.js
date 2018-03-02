@@ -10,7 +10,7 @@ class NotificationManager {
     const spots = await SpotModel.getOpenSpots();
     for (const spot of spots) {
       const {spotTime, notifyStatus} = spot,
-        diff = moment(spotTime).diff(moment(), "hours");
+        diff = moment(spotTime, moment.ISO_8601).diff(moment(), "hours");
       const is24hBeforeMatch = diff <= 24 && diff >= 0,
         is1hBeforeMatch = diff <= 1 && diff >= 0;
       if (diff <= -1) {
