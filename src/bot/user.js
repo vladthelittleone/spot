@@ -204,8 +204,8 @@ function createScene () {
         await SpotModel.create(spots[id]);
         await SpotModel.addPlayer(spots[id].hash, from);
         ctx.reply(
+          message.SPOT_HAS_BEEN_CREATEED,
           Markup.inlineKeyboard([
-            message.SPOT_HAS_BEEN_CREATEED,
             Markup.urlButton(
               "Выбрать группу",
               `https://telegram.me/SpotBBot?startgroup=${spots[id].hash}`

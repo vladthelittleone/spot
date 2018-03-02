@@ -1,6 +1,6 @@
-const SPOT_TYPES = [
+const SPORT_TYPES = [
   "Футбол",
   "Баскетбол"
 ];
 
-module.exports.SPOT_TYPES = SPOT_TYPES;
+module.exports.SPORT_TYPES = SPORT_TYPES;

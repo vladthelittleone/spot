@@ -40,7 +40,7 @@ module.exports = (bot) => {
     }
   });
 
-  bot.command('next', async (ctx) => {
+  bot.command(`/next@SpotBBot`, async (ctx) => {
     const groupId = ctx.update.message.chat.id;
     SpotModel.getSpotByGroupId(groupId)
              .then((spot) => Components.sendMatch(ctx, spot));
