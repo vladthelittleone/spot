@@ -15,9 +15,8 @@ module.exports = (bot) => {
       const {match} = ctx;
       const hash = match[1];
       const spot = await SpotModel.getByHash(hash);
-      spot.groupId = ctx.chat.id;
       if (spot) {
-        await SpotModel.addGroupId(hash, spot.groupId);
+        await SpotModel.addGroup(hash, ctx.chat.id, ctx.chat.title);
         ctx.reply(message.NEW_SPOT_IS_CREATED)
            .then(() => Components.sendMatch(ctx, spot));
       }

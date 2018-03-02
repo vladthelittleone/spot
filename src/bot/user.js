@@ -130,8 +130,8 @@ function createScene () {
      * choose spot time
      */
     (ctx) => {
-      const time = moment(ctx.message.text, "DD.MM.YY HH:mm");
-      if (time) {
+      const time = moment(ctx.message.text, "DD.MM.YY HH:mm", true);
+      if (time.isValid()) {
         if (time.diff(moment()) < 0) {
           ctx.reply(message.CANNOT_USE_PAST_TIME);
         } else {
@@ -140,7 +140,7 @@ function createScene () {
           return ctx.wizard.next();
         }
       } else {
-        ctx.replyWithMarkdown("Неверный формат! Используйте следующий: *ДД.ММ.ГГ Ч:m*");
+        ctx.replyWithMarkdown("Неверный формат! Используйте следующий: *ДД.ММ.ГГ Ч:М*");
       }
     },
 

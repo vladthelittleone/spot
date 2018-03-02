@@ -16,6 +16,7 @@ let schema = new Schema({
   paymentInfo:  String,
   hash:         String,
   groupId:      String,
+  groupTitle:   String,
   players:      Array,
   notifyStatus: {
     type:    String,
@@ -106,11 +107,12 @@ Spot.addPlayer = async (hash, from) => {
   }
 };
 
-Spot.addGroupId = async (hash, groupId) => {
+Spot.addGroup = async (hash, groupId, groupTitle) => {
   return await Spot.findOneAndUpdate(
     {hash: hash},
     {
       groupId,
+      groupTitle,
       status: SPOT_STATUS.OPEN
     }
   );
