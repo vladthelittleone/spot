@@ -1,8 +1,11 @@
 const Telegraf = require("telegraf");
 const config = require("../config");
 const logger = require("../utils/log")(module);
+const ip = require('../utils/ip');
 
-const bot = new Telegraf(config.get("telegram:token"));
+const token = config.get("telegram:token");
+
+const bot = new Telegraf(token);
 // export here because component.js import 'index.js'
 module.exports = bot;
 
@@ -15,6 +18,13 @@ bot.start((ctx) => {
 require("./spot")(bot);
 require("./user")(bot);
 
-bot.startPolling();
-
-logger.info("bot start polling updates");
+if (process.env.NODE_ENV === 'pro') {
+  bot.telegram.setWebhook(`${ip.getExternalIp()}/${token}`);
+  bot.startWebhook(`/${token}`, null, 8080);
+  logger.info("production start: bot starting hears updates from webhook");
+} else {
+  bot.telegram.deleteWebhook().then(() => {
+    bot.startPolling();
+    logger.info("development start: bot starting polling updates");
+  });
+}
