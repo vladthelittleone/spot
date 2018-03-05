@@ -9,6 +9,10 @@ const bot = new Telegraf(token);
 // export here because component.js import 'index.js'
 module.exports = bot;
 
+bot.catch((error) => {
+  logger.error(`telegraf error: ${error}`);
+});
+
 // import here because component.js import 'index.js'
 const Components = require("./components");
 bot.start((ctx) => {
