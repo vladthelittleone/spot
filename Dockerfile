@@ -1,11 +1,11 @@
 from node:alpine
 
-workdir /usr/src/app
+workdir /usr/src/bot
 
-copy package.json /usr/src/app
+copy package.json /usr/src/bot
 
 run npm i --only=production
 
-copy . /usr/src/app
+copy . /usr/src/bot
 
 cmd ["npm", "run", "pm2"]

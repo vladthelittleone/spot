@@ -1,16 +1,11 @@
 {
   "apps": [
     {
-      "name": "spot",
+      "name": "bot",
       "script": "./src/app.js",
       "watch": true,
       "env": {
-        "NODE_ENV": "dev",
-        "NODE_PATH": "."
-      },
-      "env_production": {
-        "NODE_ENV": "pro",
-        "NODE_PATH": "."
+        "NODE_ENV": "pro"
       }
     }
   ]

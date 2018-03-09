@@ -31,7 +31,7 @@ class Components {
   static cancelSceneKeyboard (ctx) {
     ctx.reply("Вы можете отменить создание матча на клавиатуре", Markup.keyboard([
       [message.CANCEL]
-    ]).resize().extra());
+    ]));
   }
 
   static mainKeyboard (ctx) {
