@@ -25,7 +25,7 @@ module.exports = (bot) => {
 
   bot.on("contact", async (ctx) => {
     const {from} = ctx;
-    Components.chooseMainAction(ctx);
+    Components.mainKeyboard(ctx);
     if (ctx.message.contact) {
       const phone = ctx.message.contact.phone_number;
       if (spots[from.id]) {

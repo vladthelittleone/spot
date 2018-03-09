@@ -28,7 +28,13 @@ class Components {
     );
   }
 
-  static chooseMainAction (ctx) {
+  static cancelSceneKeyboard (ctx) {
+    ctx.reply("Вы можете отменить создание матча на клавиатуре", Markup.keyboard([
+      [message.CANCEL]
+    ]).resize().extra());
+  }
+
+  static mainKeyboard (ctx) {
     ctx.reply("Выберите действие", Markup.keyboard([
       [message.OPEN_SPOTS],
       [message.CREATE_SPOT],
@@ -37,7 +43,7 @@ class Components {
     ]).resize().extra());
   }
 
-  static chooseSportType (ctx, sportTypes) {
+  static sportTypesKeyboard (ctx, sportTypes) {
     const keyboard = lodash.map(sportTypes, (s) => Markup.callbackButton(s, s));
     ctx.reply(
       "Введите тип спортивного матча.",

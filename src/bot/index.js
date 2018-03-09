@@ -16,7 +16,7 @@ bot.catch((error) => {
 // import here because component.js import 'index.js'
 const Components = require("./components");
 bot.start((ctx) => {
-  Components.chooseMainAction(ctx);
+  Components.mainKeyboard(ctx);
 });
 
 require("./spot")(bot);

@@ -20,6 +20,13 @@ module.exports = (bot) => {
   // create scene about new spot
   const create = createScene();
 
+  // added command that cancel scene
+  create.hears(message.CANCEL, ctx => {
+    ctx.scene.leave();
+    delete spots[ctx.from.id]; // delete spot from cache
+    Components.mainKeyboard(ctx);
+  });
+
   // create scene manager
   const stage = new Stage();
 
@@ -104,7 +111,8 @@ function createScene () {
     (ctx) => {
       const fromId = ctx.from.id;
       spots[ctx.from.id] = {fromId}; // initialize new spot at cache
-      Components.chooseSportType(ctx, SPORT_TYPES);
+      Components.sportTypesKeyboard(ctx, SPORT_TYPES);
+      Components.cancelSceneKeyboard(ctx);
       return ctx.wizard.next();
     },
 
@@ -112,9 +120,9 @@ function createScene () {
      * choose spot type
      */
     (ctx) => {
-      const replyError = (ctx) => {
-        ctx.reply(message.USER_ERROR_MSG);
-        Components.chooseSportType(ctx, SPORT_TYPES);
+      const replyError = async (ctx) => {
+        await ctx.reply(message.USER_ERROR_MSG);
+        Components.sportTypesKeyboard(ctx, SPORT_TYPES);
       };
 
       const type = ctx.callbackQuery && ctx.callbackQuery.data;
