@@ -4,7 +4,7 @@ const {notify} = require("../bot/notification");
 const {NOTIFY_STATUS} = require("../bot/status");
 const message = require("../bot/message");
 
-class NotificationManager {
+class NotifyOperations {
   static async execute () {
     const spots = await SpotModel.getOpenSpots();
     for (const spot of spots) {
@@ -31,4 +31,4 @@ class NotificationManager {
   }
 }
 
-module.exports = NotificationManager;
+module.exports = NotifyOperations;

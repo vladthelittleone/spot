@@ -1,7 +1,7 @@
 require("./bot");
 
 const manager = require("./managers");
-const NotificationManager = require("./managers/notification");
-const CleanerManager = require('./managers/cleaner');
-manager.start(NotificationManager);
-manager.start(CleanerManager);
+const NotifyOperations = require("./managers/notification");
+const CleanOperations = require('./managers/cleaner');
+manager.start(NotifyOperations);
+manager.start(CleanOperations);
