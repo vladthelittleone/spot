@@ -9,10 +9,10 @@ class Components {
     return chatId && bot.telegram.sendLocation(chatId, latitude, longitude);
   }
 
-  static async sendMatch (ctx, spot, isSendLocation = true) {
+  static async sendMatch (ctx, spot, withLocation = true) {
     if (!spot) return ctx.replyWithMarkdown(message.GROUP_DONT_HAVE_ACTIVE_SPOT);
 
-    if (spot.location && isSendLocation) {
+    if (withLocation && spot.location) {
       await this.sendLocation(ctx.chat.id, spot.location);
       await this.sendSpotInfo(ctx, spot);
     } else {
