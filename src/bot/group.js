@@ -46,7 +46,7 @@ module.exports = (bot) => {
              .then((spot) => Components.sendMatch(ctx, spot));
   });
 
-  bot.command('/stop@SpotBBot', async (ctx) => {
+  bot.command('/remove@SpotBBot', async (ctx) => {
     const groupId = ctx.update.message.chat.id;
     const spot = await SpotModel.getSpotByGroupId(groupId);
     const admins = await ctx.getChatAdministrators();

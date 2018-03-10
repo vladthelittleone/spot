@@ -19,7 +19,7 @@ bot.start((ctx) => {
   Components.mainKeyboard(ctx);
 });
 
-require("./spot")(bot);
+require("./group")(bot);
 require("./user")(bot);
 
 if (process.env.NODE_ENV === 'pro') {
