@@ -11,7 +11,7 @@ const notifyMessage = (spot, interval) => {
 };
 
 const spotInfo = (spot) => {
-  const {sportType, spotTime, price, count, players, groupTitle, locationText} = spot;
+  const {sportType, spotTime, price, count, players, groupTitle, locationText, paymentInfo} = spot;
   let str = "";
   str += `Спорт: *${sportType}*\n`;
   str += groupTitle ? `Группа: *${groupTitle}*\n` : '';
@@ -20,6 +20,7 @@ const spotInfo = (spot) => {
   str += `Необходимо: *${count}* человек\n`;
   str += `Собрано: *${players.length}* человек\n`;
   str += locationText ? `Адрес: *${locationText}*` : '';
+  str += `Доп. инф об оплате: ${paymentInfo}` ;
   return str;
 };
 
