@@ -1,4 +1,5 @@
 const moment = require('moment');
+const lodash = require('lodash');
 
 const getIntervalHours = (interval) => interval === 'day' ? '24 часа' : '1 час';
 const getDate = (date) => moment(date).format("DD.MM.YY h:mm a");
@@ -25,13 +26,17 @@ const spotInfo = (spot) => {
   return str;
 };
 
+const playerInfo = (index, player) => {
+  return `${index + 1}. ${player.first_name &&
+                         player.first_name} ${player.last_name &&
+                                              player.last_name}`;
+};
+
 const playersList = (players) => {
   let str = "";
-  for (const id in players) {
-    if (players.hasOwnProperty(id)) {
-      str += `${id + 1}: ${players[id]}`;
-    }
-  }
+  lodash.forEach(players, (player, index) => {
+    str += playerInfo(index, player);
+  });
   return str;
 };
 
