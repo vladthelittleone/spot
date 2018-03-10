@@ -1,26 +1,25 @@
 const moment = require('moment');
 
 const getIntervalHours = (interval) => interval === 'day' ? '24 часа' : '1 час';
+const getDate = (date) => moment(date).format("DD.MM.YY h:mm a");
 
 const notifyMessage = (spot, interval) => {
   let str = "";
-  str += `Ваш матч по *${spot.sportType}*`;
-  str += `стартует через *${getIntervalHours(interval)}*.`;
-  str += ` Информация об оплате: *${spot.paymentInfo}* | *${spot.price}Р*.`;
-  str += ` Точное время: *${moment(spot.spotTime).format('MMMM Do YYYY, h:mm:ss a')}*.`;
-  str += spot.locationText ? `Адрес проведения: ${spot.locationText}` : '';
+  str += `Через *${getIntervalHours(interval)}* стартует матч\n`;
+  str += spotInfo(spot);
   return str;
 };
 
 const spotInfo = (spot) => {
-  const {sportType, spotTime, price, count, players, locationText} = spot;
+  const {sportType, spotTime, price, count, players, groupTitle, locationText} = spot;
   let str = "";
-  str += `Вид спорта: ${sportType}\n`;
-  str += `Дата проведения: ${moment(spotTime).format("DD.MM.YY H:m")}\n`;
-  str += `Цена: ${price}\n`;
-  str += `Необходимо: ${count} человек\n`;
-  str += `Собрано: ${players.length} человек\n`;
-  str += locationText ? `Адрес проведения: ${locationText}` : '';
+  str += `Спорт: *${sportType}*\n`;
+  str += groupTitle ? `Группа: *${groupTitle}*\n` : '';
+  str += `Дата: *${getDate(spotTime)}*\n`;
+  str += `Цена: *${price}*\n`;
+  str += `Необходимо: *${count}* человек\n`;
+  str += `Собрано: *${players.length}* человек\n`;
+  str += locationText ? `Адрес: *${locationText}*` : '';
   return str;
 };
 
@@ -41,8 +40,16 @@ module.exports.CURRENT_SPOT = "Ваш текущий матч";
 module.exports.REMOVE_ACTIVE_SPOT = "Удалить ваш текущий матч";
 module.exports.SPOT_ALREADY_CREATED = "Вами уже был создан матч";
 module.exports.NO_ACTIVE_SPOT = "Вы еще не добавились в матч";
+module.exports.CURRENT_SPOT_HAS_BEEN_REMOVED = "Текущий матч был удален";
 module.exports.SPOT_ALREADY_ACTIVE = "Вы уже были добавлены в матч";
 module.exports.NO_ACTIVE_SPOTS = "Нет активных матчей";
 module.exports.MATCH_REMOVE_SUCCESS = "Созданный вами матч был удален";
 module.exports.PLAYER_REMOVE_SUCCESS = "Вы были удалены из матча";
 module.exports.CANNOT_USE_PAST_TIME = "Нельзя использовать прошлое время!";
+module.exports.CANNOT_CREATE_SPOT_FOR_ONE = 'Нельзя создавать мачт для одного человека!';
+module.exports.INCORRECT_DATE_FORMAT = "Неверный формат! Используйте следующий: *ДД.ММ.ГГ Ч:М*";
+module.exports.SPOT_HAS_BEEN_CREATEED = "Матч успешно создан! Выберите группу для информирования о матче";
+module.exports.SPOT_IS_OVER = '*Ваш матч начался! Спасибо за использования нашего сервиса!*';
+module.exports.GROUP_DONT_HAVE_ACTIVE_SPOT = '*В данной группе нет активного матча!*';
+module.exports.YOU_ARE_NOT_ADMIN = (name) => `Извините, ${name}, но вы не администратор этой группы`;
+module.exports.CANCEL = `Отмена`;

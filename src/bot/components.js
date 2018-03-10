@@ -6,10 +6,12 @@ const lodash = require("lodash");
 class Components {
   static sendLocation (chatId, location) {
     const {latitude, longitude} = location;
-    return bot.telegram.sendLocation(chatId, latitude, longitude);
+    return chatId && bot.telegram.sendLocation(chatId, latitude, longitude);
   }
 
   static sendMatch (ctx, spot) {
+    if (!spot) return ctx.replyWithMarkdown(message.GROUP_DONT_HAVE_ACTIVE_SPOT);
+
     if (spot.location) {
       this.sendLocation(ctx.chat.id, spot.location)
           .then(() => this.sendSpotInfo(ctx, spot));
@@ -19,14 +21,20 @@ class Components {
   }
 
   static sendSpotInfo (ctx, spot) {
-    ctx.reply(
+    ctx.replyWithMarkdown(
       message.SPOT_INFO(spot),
       Markup.inlineKeyboard([Markup.callbackButton("Добавиться", `add ${spot.hash}`)])
             .extra()
     );
   }
 
-  static chooseMainAction (ctx) {
+  static cancelSceneKeyboard (ctx) {
+    ctx.reply("Вы можете отменить создание матча на клавиатуре", Markup.keyboard([
+      [message.CANCEL]
+    ]));
+  }
+
+  static mainKeyboard (ctx) {
     ctx.reply("Выберите действие", Markup.keyboard([
       [message.OPEN_SPOTS],
       [message.CREATE_SPOT],
@@ -35,7 +43,7 @@ class Components {
     ]).resize().extra());
   }
 
-  static chooseSpotType (ctx, sportTypes) {
+  static sportTypesKeyboard (ctx, sportTypes) {
     const keyboard = lodash.map(sportTypes, (s) => Markup.callbackButton(s, s));
     ctx.reply(
       "Введите тип спортивного матча.",

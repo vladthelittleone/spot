@@ -1,11 +1,12 @@
 /**
- * Здесь выполняем логику связанную с группой.
+ * here execute logic with group
  */
 
 const SpotModel = require("../models/spot");
 const Components = require("./components");
 const message = require('./message');
 const Markup = require("telegraf/markup");
+
 const spots = {};
 
 module.exports = (bot) => {
@@ -14,9 +15,8 @@ module.exports = (bot) => {
       const {match} = ctx;
       const hash = match[1];
       const spot = await SpotModel.getByHash(hash);
-      spot.groupId = ctx.chat.id;
       if (spot) {
-        await SpotModel.addGroupId(hash, spot.groupId);
+        await SpotModel.addGroup(hash, ctx.chat.id, ctx.chat.title);
         ctx.reply(message.NEW_SPOT_IS_CREATED)
            .then(() => Components.sendMatch(ctx, spot));
       }
@@ -25,7 +25,7 @@ module.exports = (bot) => {
 
   bot.on("contact", async (ctx) => {
     const {from} = ctx;
-    Components.chooseMainAction(ctx);
+    Components.mainKeyboard(ctx);
     if (ctx.message.contact) {
       const phone = ctx.message.contact.phone_number;
       if (spots[from.id]) {
@@ -40,10 +40,25 @@ module.exports = (bot) => {
     }
   });
 
-  bot.command('next', async (ctx) => {
+  bot.command(`/next@SpotBBot`, async (ctx) => {
     const groupId = ctx.update.message.chat.id;
     SpotModel.getSpotByGroupId(groupId)
              .then((spot) => Components.sendMatch(ctx, spot));
+  });
+
+  bot.command('/remove@SpotBBot', async (ctx) => {
+    const groupId = ctx.update.message.chat.id;
+    const spot = await SpotModel.getSpotByGroupId(groupId);
+    const admins = await ctx.getChatAdministrators();
+    if (!admins.find((admin) => admin.user.id === ctx.from.id)) {
+      return ctx.replyWithMarkdown(message.YOU_ARE_NOT_ADMIN(ctx.from.first_name));
+    }
+    if (spot) {
+      await SpotModel.removeSpot(spot.hash);
+      ctx.replyWithMarkdown(message.CURRENT_SPOT_HAS_BEEN_REMOVED);
+    } else {
+      ctx.replyWithMarkdown(message.GROUP_DONT_HAVE_ACTIVE_SPOT);
+    }
   });
 
   bot.action(/add (.+)/, async (ctx) => {

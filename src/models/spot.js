@@ -1,10 +1,8 @@
 const mongoose = require("../utils/mongoose");
-const status = require("../utils/status");
-
-const Schema = mongoose.Schema;
+const {NOTIFY_STATUS, SPOT_STATUS} = require("../bot/status");
 const lodash = require("lodash");
 
-const {NOTIFY_STATUS, SPOT_STATUS} = status;
+const Schema = mongoose.Schema;
 
 let schema = new Schema({
   fromId:       Number,
@@ -18,6 +16,7 @@ let schema = new Schema({
   paymentInfo:  String,
   hash:         String,
   groupId:      String,
+  groupTitle:   String,
   players:      Array,
   notifyStatus: {
     type:    String,
@@ -56,6 +55,10 @@ Spot.removePlayer = async (hash, from) => {
       new: true
     }
   );
+};
+
+Spot.getSpots = async () => {
+  return await Spot.find({});
 };
 
 Spot.getOpenSpots = async () => {
@@ -108,11 +111,12 @@ Spot.addPlayer = async (hash, from) => {
   }
 };
 
-Spot.addGroupId = async (hash, groupId) => {
+Spot.addGroup = async (hash, groupId, groupTitle) => {
   return await Spot.findOneAndUpdate(
     {hash: hash},
     {
       groupId,
+      groupTitle,
       status: SPOT_STATUS.OPEN
     }
   );
@@ -134,7 +138,7 @@ Spot.create = async (spot) => {
     sportType:    spot.sportType,
     hash:         spot.hash,
     price:        spot.price,
-    count:        spot.count, // Максимальное кол-во человек или необходимое.
+    count:        spot.count, // insert max human at spot
     paymentInfo:  spot.paymentInfo,
     created:      Date.now(),
     players:      []

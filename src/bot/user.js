@@ -1,5 +1,5 @@
 /**
- * Здесь выполняем логику связанную с пользователем.
+ * here execute logic with user
  */
 
 const Stage = require("telegraf/stage");
@@ -7,24 +7,30 @@ const WizardScene = require("telegraf/scenes/wizard");
 const Components = require("./components");
 const Markup = require("telegraf/markup");
 const SpotModel = require("../models/spot");
-const config = require("../config");
+const {SPORT_TYPES} = require('./types');
 const session = require("telegraf/session");
 const lodash = require("lodash");
 const message = require("./message");
 const moment = require("moment");
 
 const spots = {};
-const sportTypes = config.get("sportTypes");
 
 module.exports = (bot) => {
 
-  // Сцена создания нового матча.
+  // create scene about new spot
   const create = createScene();
 
-  // Create scene manager
+  // added command that cancel scene
+  create.hears(message.CANCEL, ctx => {
+    ctx.scene.leave();
+    delete spots[ctx.from.id]; // delete spot from cache
+    Components.mainKeyboard(ctx);
+  });
+
+  // create scene manager
   const stage = new Stage();
 
-  // Scene registration
+  // scene registration
   stage.register(create);
 
   bot.use(session());
@@ -41,7 +47,8 @@ module.exports = (bot) => {
     if (spot.fromId === from.id && spot.players.length === 1) {
       await SpotModel.removeSpot(spot.hash);
       ctx.reply(message.MATCH_REMOVE_SUCCESS);
-      bot.telegram.sendMessage(spot.groupId, "Текущий матч был удален");
+      spot.groupId &&
+      bot.telegram.sendMessage(spot.groupId, message.CURRENT_SPOT_HAS_BEEN_REMOVED);
       return;
     }
 
@@ -99,27 +106,27 @@ function createScene () {
     "create",
 
     /**
-     * Выбор типа матча.
+     * initialize spot
      */
     (ctx) => {
       const fromId = ctx.from.id;
-      spots[ctx.from.id] = {fromId}; // инициализируем новый spot
-      Components.chooseSpotType(ctx, sportTypes);
+      spots[ctx.from.id] = {fromId}; // initialize new spot at cache
+      Components.sportTypesKeyboard(ctx, SPORT_TYPES);
+      Components.cancelSceneKeyboard(ctx);
       return ctx.wizard.next();
     },
 
     /**
-     * Выбор времени проведения матча.
+     * choose spot type
      */
     (ctx) => {
-
-      const replyError = (ctx) => {
-        ctx.reply(message.USER_ERROR_MSG);
-        Components.chooseSpotType(ctx, sportTypes);
+      const replyError = async (ctx) => {
+        await ctx.reply(message.USER_ERROR_MSG);
+        Components.sportTypesKeyboard(ctx, SPORT_TYPES);
       };
 
-      const sportType = ctx.callbackQuery && ctx.callbackQuery.data;
-      if (sportType && lodash.includes(sportTypes, sportType)) {
+      const type = ctx.callbackQuery && ctx.callbackQuery.data;
+      if (type && lodash.includes(SPORT_TYPES, type)) {
         spots[ctx.from.id].sportType = ctx.callbackQuery.data;
         ctx.replyWithMarkdown(message.INSERT_SPOT_DATE);
         return ctx.wizard.next();
@@ -129,25 +136,25 @@ function createScene () {
     },
 
     /**
-     * Выбор места проведения матча.
+     * choose spot time
      */
     (ctx) => {
-      const time = moment(ctx.message.text, "DD.MM.YY H:m").toISOString();
-      if (time) {
-        if (moment(time, moment.ISO_8601).diff(moment(), "hours") < 0) {
+      const time = moment(ctx.message.text, "DD.MM.YY HH:mm", true);
+      if (time.isValid()) {
+        if (time.diff(moment()) < 0) {
           ctx.reply(message.CANNOT_USE_PAST_TIME);
         } else {
-          spots[ctx.from.id].spotTime = time;
+          spots[ctx.from.id].spotTime = time.toISOString();
           ctx.replyWithMarkdown(message.INSERT_SPOT_LOCATION);
           return ctx.wizard.next();
         }
       } else {
-        ctx.replyWithMarkdown("Неверный формат! Используйте следующий: *ДД.ММ.ГГ Ч:m*");
+        ctx.replyWithMarkdown(message.INCORRECT_DATE_FORMAT);
       }
     },
 
     /**
-     * Ввод цены за человека.
+     * insert or upload location
      */
     (ctx) => {
       if (ctx.message.location) {
@@ -160,23 +167,14 @@ function createScene () {
     },
 
     /**
-     * Выбор количества человек.
-     */
-    (ctx) => {
-      spots[ctx.from.id].price = ctx.message.text;
-      ctx.reply(message.INSERT_SPOT_MEMBERS);
-      return ctx.wizard.next();
-    },
-
-    /**
-     * Ввод информации по оплате.
+     * insert cost by one human
      */
     (ctx) => {
       const {text} = ctx.message;
-      const count = Number.parseInt(text, 10);
-      if (!isNaN(count)) {
-        spots[ctx.from.id].count = count;
-        ctx.reply(message.INSERT_SPOT_PAYMENT_INFO);
+      const cost = Number.parseInt(text, 10);
+      if (!isNaN(cost)) {
+        spots[ctx.from.id].price = ctx.message.text;
+        ctx.reply(message.INSERT_SPOT_MEMBERS);
         return ctx.wizard.next();
       } else {
         ctx.reply(message.USER_ERROR_MSG);
@@ -184,7 +182,24 @@ function createScene () {
     },
 
     /**
-     * Создание матча.
+     * insert max human at spot
+     */
+    (ctx) => {
+      const {text} = ctx.message;
+      const count = Number.parseInt(text, 10);
+      if (!isNaN(count) && count > 0) {
+        spots[ctx.from.id].count = count;
+        ctx.reply(message.INSERT_SPOT_PAYMENT_INFO);
+        return ctx.wizard.next();
+      } else if (count === 1) {
+        ctx.reply(message.CANNOT_CREATE_SPOT_FOR_ONE);
+      } else {
+        ctx.reply(message.USER_ERROR_MSG);
+      }
+    },
+
+    /**
+     * insert payment info and create spot
      */
     async (ctx) => {
       const {from} = ctx;
@@ -197,7 +212,7 @@ function createScene () {
         await SpotModel.create(spots[id]);
         await SpotModel.addPlayer(spots[id].hash, from);
         ctx.reply(
-          "Матч успешно создан! Выберите группу для информирования о матче.",
+          message.SPOT_HAS_BEEN_CREATEED,
           Markup.inlineKeyboard([
             Markup.urlButton(
               "Выбрать группу",
@@ -206,7 +221,7 @@ function createScene () {
           ]).extra()
         );
 
-        delete spots[id]; // Удаляем информацию из "типа кэша".
+        delete spots[id]; // delete spot from cache
         return ctx.scene.leave();
       } catch (e) {
         ctx.reply(message.USER_ERROR_MSG);

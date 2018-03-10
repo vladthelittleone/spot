@@ -2,15 +2,10 @@ const mongoose = require("mongoose");
 const config = require("../../config");
 const logger = require("../log")(module);
 
-// флаг для определения - является ли текущей коннект тестовым
+// flag for set test mongo uri
 mongoose.set(
   "test",
   process.env.NODE_ENV === "test"
-);
-
-mongoose.set(
-  "migration",
-  process.env.NODE_ENV === "migration"
 );
 
 mongoose.set(
@@ -19,7 +14,7 @@ mongoose.set(
 );
 
 let databaseUri = mongoose.get("test") ?
-  config.get("database:testUri") : config.get("database:uri");
+                  config.get("database:testUri") : config.get("database:uri");
 
 const connectPromise = mongoose.connect(
   databaseUri,
@@ -30,7 +25,7 @@ mongoose.Promise = global.Promise;
 
 // for test and migration use
 mongoose.clean = function (done) {
-  if (mongoose.get("test") || mongoose.get("migration")) {
+  if (mongoose.get("test")) {
     if (!connectPromise.done) {
       connectPromise.then(() => {
         dropCollections(done);
