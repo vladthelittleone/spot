@@ -3,7 +3,7 @@ const moment = require('moment');
 const {notifyAboutMatchIsOver} = require('../bot/notification');
 const message = require('../bot/message');
 
-class CleanOperations {
+class CleanJob {
   static async execute () {
     const spots = await Spot.getSpots();
     for (const spot of spots) {
@@ -16,4 +16,4 @@ class CleanOperations {
   }
 }
 
-module.exports = CleanOperations;
+module.exports = CleanJob;
