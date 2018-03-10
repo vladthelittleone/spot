@@ -68,15 +68,15 @@ module.exports = (bot) => {
     bot.telegram.sendMessage(updated.groupId, str);
   });
 
-  bot.hears(message.OPEN_SPOTS, (ctx) => {
-    SpotModel.getOpenSpots().then((spots) => {
-      if (!spots.length) {
-        ctx.reply(message.NO_ACTIVE_SPOTS);
-      }
+  bot.hears(message.OPEN_SPOTS, async (ctx) => {
+    const spots = await SpotModel.getOpenSpots();
+    if (!spots.length) {
+      ctx.reply(message.NO_ACTIVE_SPOTS);
+    } else {
       for (const spot of spots) {
-        Components.sendMatch(ctx, spot);
+        await Components.sendMatch(ctx, spot);
       }
-    });
+    }
   });
 
   bot.hears(message.CREATE_SPOT, async (ctx) => {
@@ -101,7 +101,6 @@ module.exports = (bot) => {
 };
 
 function createScene () {
-
   return new WizardScene(
     "create",
 
@@ -111,15 +110,15 @@ function createScene () {
     (ctx) => {
       const fromId = ctx.from.id;
       spots[ctx.from.id] = {fromId}; // initialize new spot at cache
-      Components.sportTypesKeyboard(ctx, SPORT_TYPES);
       Components.cancelSceneKeyboard(ctx);
+      Components.sportTypesKeyboard(ctx, SPORT_TYPES);
       return ctx.wizard.next();
     },
 
     /**
      * choose spot type
      */
-    (ctx) => {
+    async (ctx) => {
       const replyError = async (ctx) => {
         await ctx.reply(message.USER_ERROR_MSG);
         Components.sportTypesKeyboard(ctx, SPORT_TYPES);
@@ -131,7 +130,7 @@ function createScene () {
         ctx.replyWithMarkdown(message.INSERT_SPOT_DATE);
         return ctx.wizard.next();
       } else {
-        replyError(ctx);
+        await replyError(ctx);
       }
     },
 
@@ -221,6 +220,7 @@ function createScene () {
           ]).extra()
         );
 
+        Components.mainKeyboard(ctx);
         delete spots[id]; // delete spot from cache
         return ctx.scene.leave();
       } catch (e) {

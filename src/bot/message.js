@@ -11,7 +11,7 @@ const notifyMessage = (spot, interval) => {
 };
 
 const spotInfo = (spot) => {
-  const {sportType, spotTime, price, count, players, groupTitle, locationText} = spot;
+  const {sportType, spotTime, price, count, players, groupTitle, paymentInfo, locationText} = spot;
   let str = "";
   str += `Спорт: *${sportType}*\n`;
   str += groupTitle ? `Группа: *${groupTitle}*\n` : '';
@@ -19,10 +19,22 @@ const spotInfo = (spot) => {
   str += `Цена: *${price}*\n`;
   str += `Необходимо: *${count}* человек\n`;
   str += `Собрано: *${players.length}* человек\n`;
+  str += `Оплата: *${paymentInfo}*\n`;
   str += locationText ? `Адрес: *${locationText}*` : '';
   return str;
 };
 
+const playersList = (players) => {
+  let str = "";
+  for (const id in players) {
+    if (players.hasOwnProperty(id)) {
+      str += `${id + 1}: ${players[id]}`;
+    }
+  }
+  return str;
+};
+
+module.exports.PLAYERS_LIST = (players) => playersList(players);
 module.exports.SPOT_INFO = (spot) => spotInfo(spot);
 module.exports.OPEN_SPOTS = "Список доступных матчей";
 module.exports.CREATE_SPOT = "Создать матч";
