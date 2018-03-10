@@ -27,9 +27,11 @@ const spotInfo = (spot) => {
 };
 
 const playerInfo = (index, player) => {
-  return `${index + 1}. ${player.first_name &&
-                         player.first_name} ${player.last_name &&
-                                              player.last_name}`;
+  let str = "";
+  str += `${index + 1}. `;
+  if (player.first_name) str += `${player.first_name} `;
+  if (player.last_name) str += player.last_name;
+  return str;
 };
 
 const playersList = (players) => {
