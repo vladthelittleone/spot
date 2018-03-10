@@ -42,8 +42,14 @@ module.exports = (bot) => {
 
   bot.command(`/next@SpotBBot`, async (ctx) => {
     const groupId = ctx.update.message.chat.id;
-    SpotModel.getSpotByGroupId(groupId)
-             .then((spot) => Components.sendMatch(ctx, spot));
+    const spot = await SpotModel.getSpotByGroupId(groupId);
+    Components.sendMatch(ctx, spot);
+  });
+
+  bot.command(`/members@SpotBBot`, async (ctx) => {
+    const groupId = ctx.update.message.chat.id;
+    const spot = await SpotModel.getSpotByGroupId(groupId);
+    Components.sendPlayers(ctx, spot.players);
   });
 
   bot.command('/remove@SpotBBot', async (ctx) => {

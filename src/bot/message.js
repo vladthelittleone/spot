@@ -1,4 +1,5 @@
 const moment = require('moment');
+const lodash = require('lodash');
 
 const getIntervalHours = (interval) => interval === 'day' ? '24 часа' : '1 час';
 const getDate = (date) => moment(date).format("DD.MM.YY h:mm a");
@@ -11,18 +12,37 @@ const notifyMessage = (spot, interval) => {
 };
 
 const spotInfo = (spot) => {
-  const {sportType, spotTime, price, count, players, groupTitle, locationText} = spot;
+  const {sportType, metro, spotTime, price, count, players, groupTitle, paymentInfo, locationText} = spot;
   let str = "";
   str += `Спорт: *${sportType}*\n`;
   str += groupTitle ? `Группа: *${groupTitle}*\n` : '';
   str += `Дата: *${getDate(spotTime)}*\n`;
+  str += `Метро: *${metro}*\n`;
   str += `Цена: *${price}*\n`;
   str += `Необходимо: *${count}* человек\n`;
   str += `Собрано: *${players.length}* человек\n`;
+  str += `Оплата: *${paymentInfo}*\n`;
   str += locationText ? `Адрес: *${locationText}*` : '';
   return str;
 };
 
+const playerInfo = (index, player) => {
+  let str = "";
+  str += `${index + 1}. `;
+  if (player.first_name) { str += `${player.first_name} ` }
+  if (player.last_name) { str += player.last_name }
+  return str;
+};
+
+const playersList = (players) => {
+  let str = "";
+  lodash.forEach(players, (player, index) => {
+    str += playerInfo(index, player);
+  });
+  return str;
+};
+
+module.exports.PLAYERS_LIST = (players) => playersList(players);
 module.exports.SPOT_INFO = (spot) => spotInfo(spot);
 module.exports.OPEN_SPOTS = "Список доступных матчей";
 module.exports.CREATE_SPOT = "Создать матч";
@@ -35,6 +55,7 @@ module.exports.INSERT_SPOT_LOCATION = "Введите место проведе�
 module.exports.INSERT_SPOT_COST = "Введите цену за одного человека";
 module.exports.INSERT_SPOT_MEMBERS = "Введите количество человек";
 module.exports.INSERT_SPOT_PAYMENT_INFO = "Введите доп. информацию по оплате";
+module.exports.INSERT_METRO_STATION = "Введите станцию метро";
 module.exports.NEW_PLAYER_WANTS_TO_ADD = "В текущий матч хочет добавиться игрок";
 module.exports.CURRENT_SPOT = "Ваш текущий матч";
 module.exports.REMOVE_ACTIVE_SPOT = "Удалить ваш текущий матч";
