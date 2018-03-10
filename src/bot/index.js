@@ -13,12 +13,14 @@ bot.catch((error) => {
   logger.error(`telegraf error: ${error}`);
 });
 
-bot.use(async (ctx, next) => {
-  const start = new Date();
-  await next();
-  const ms = new Date() - start;
-  logger.info(`message: [ ${ctx.update.message.text} ] response time [ ${ms}ms ]`);
-});
+if (process.env.NODE_ENV === 'dev') {
+  bot.use(async (ctx, next) => {
+    const start = new Date();
+    await next();
+    const ms = new Date() - start;
+    logger.info(`message: [ ${ctx.update.message.text} ] response time [ ${ms}ms ]`);
+  });
+}
 
 // import here because component.js import 'index.js'
 const Components = require("./components");

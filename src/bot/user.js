@@ -74,9 +74,13 @@ module.exports = (bot) => {
       ctx.reply(message.NO_ACTIVE_SPOTS);
     } else {
       for (const spot of spots) {
-        await Components.sendMatch(ctx, spot);
+        await Components.sendMatch(ctx, spot, false);
       }
     }
+  });
+
+  bot.hears(message.CANCEL, ctx => {
+    Components.mainKeyboard(ctx);
   });
 
   bot.hears(message.CREATE_SPOT, async (ctx) => {
@@ -85,7 +89,7 @@ module.exports = (bot) => {
       ctx.scene.enter("create");
     } else {
       ctx.reply(message.SPOT_ALREADY_CREATED);
-      Components.sendMatch(ctx, spot);
+      await Components.sendMatch(ctx, spot);
     }
   });
 
@@ -93,7 +97,7 @@ module.exports = (bot) => {
     const {from} = ctx;
     const spot = await SpotModel.getCurrentSpot(from.id);
     if (spot) {
-      Components.sendMatch(ctx, spot);
+      await Components.sendMatch(ctx, spot);
     } else {
       ctx.reply(message.NO_ACTIVE_SPOT);
     }
@@ -135,7 +139,7 @@ function createScene () {
     },
 
     /**
-     * choose spot time
+     * insert spot time
      */
     (ctx) => {
       const time = moment(ctx.message.text, "DD.MM.YY HH:mm", true);
@@ -144,12 +148,21 @@ function createScene () {
           ctx.reply(message.CANNOT_USE_PAST_TIME);
         } else {
           spots[ctx.from.id].spotTime = time.toISOString();
-          ctx.replyWithMarkdown(message.INSERT_SPOT_LOCATION);
+          ctx.replyWithMarkdown(message.INSERT_METRO_STATION);
           return ctx.wizard.next();
         }
       } else {
         ctx.replyWithMarkdown(message.INCORRECT_DATE_FORMAT);
       }
+    },
+
+    /**
+     * enter metro station
+     */
+    (ctx) => {
+      spots[ctx.from.id].metro = ctx.message.text;
+      ctx.replyWithMarkdown(message.INSERT_SPOT_LOCATION);
+      return ctx.wizard.next();
     },
 
     /**

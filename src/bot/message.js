@@ -11,11 +11,12 @@ const notifyMessage = (spot, interval) => {
 };
 
 const spotInfo = (spot) => {
-  const {sportType, spotTime, price, count, players, groupTitle, paymentInfo, locationText} = spot;
+  const {sportType, metro, spotTime, price, count, players, groupTitle, paymentInfo, locationText} = spot;
   let str = "";
   str += `Спорт: *${sportType}*\n`;
   str += groupTitle ? `Группа: *${groupTitle}*\n` : '';
   str += `Дата: *${getDate(spotTime)}*\n`;
+  str += `Метро: *${metro}*\n`;
   str += `Цена: *${price}*\n`;
   str += `Необходимо: *${count}* человек\n`;
   str += `Собрано: *${players.length}* человек\n`;
@@ -47,6 +48,7 @@ module.exports.INSERT_SPOT_LOCATION = "Введите место проведе�
 module.exports.INSERT_SPOT_COST = "Введите цену за одного человека";
 module.exports.INSERT_SPOT_MEMBERS = "Введите количество человек";
 module.exports.INSERT_SPOT_PAYMENT_INFO = "Введите доп. информацию по оплате";
+module.exports.INSERT_METRO_STATION = "Введите станцию метро";
 module.exports.NEW_PLAYER_WANTS_TO_ADD = "В текущий матч хочет добавиться игрок";
 module.exports.CURRENT_SPOT = "Ваш текущий матч";
 module.exports.REMOVE_ACTIVE_SPOT = "Удалить ваш текущий матч";
