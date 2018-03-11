@@ -74,7 +74,7 @@ module.exports = (bot) => {
       ctx.reply(message.NO_ACTIVE_SPOTS);
     } else {
       for (const spot of spots) {
-        await Components.sendMatch(ctx, spot, false);
+        await Components.sendMatch(ctx, spot, false, false);
       }
     }
   });

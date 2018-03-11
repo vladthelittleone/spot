@@ -9,14 +9,14 @@ class Components {
     return chatId && bot.telegram.sendLocation(chatId, latitude, longitude);
   }
 
-  static async sendMatch (ctx, spot, withLocation = true) {
+  static async sendMatch (ctx, spot, withLocation = true, withPayment = true) {
     if (!spot) return ctx.replyWithMarkdown(message.GROUP_DONT_HAVE_ACTIVE_SPOT);
 
     if (withLocation && spot.location) {
       await this.sendLocation(ctx.chat.id, spot.location);
-      await this.sendSpotInfo(ctx, spot);
+      await this.sendSpotInfo(ctx, spot, withPayment);
     } else {
-      await this.sendSpotInfo(ctx, spot);
+      await this.sendSpotInfo(ctx, spot, withPayment);
     }
   }
 
@@ -24,9 +24,9 @@ class Components {
     ctx.replyWithMarkdown(message.PLAYERS_LIST(players));
   }
 
-  static sendSpotInfo (ctx, spot) {
+  static sendSpotInfo (ctx, spot, withPayment = true) {
     ctx.replyWithMarkdown(
-      message.SPOT_INFO(spot),
+      message.SPOT_INFO(spot, withPayment),
       Markup.inlineKeyboard([Markup.callbackButton("Добавиться", `add ${spot.hash}`)])
             .extra()
     );

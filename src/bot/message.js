@@ -11,7 +11,7 @@ const notifyMessage = (spot, interval) => {
   return str;
 };
 
-const spotInfo = (spot) => {
+const spotInfo = (spot, withPayment = true) => {
   const {sportType, metro, spotTime, price, count, players, groupTitle, paymentInfo, locationText} = spot;
   let str = "";
   str += `Спорт: *${sportType}*\n`;
@@ -21,7 +21,7 @@ const spotInfo = (spot) => {
   str += `Цена: *${price}*\n`;
   str += `Необходимо: *${count}* человек\n`;
   str += `Собрано: *${players.length}* человек\n`;
-  str += `Оплата: *${paymentInfo}*\n`;
+  str += withPayment ? `Оплата: *${paymentInfo}*\n` : '';
   str += locationText ? `Адрес: *${locationText}*` : '';
   return str;
 };
@@ -49,7 +49,7 @@ const playersList = (players) => {
 
 module.exports.PLAYERS_LIST = (players) => playersList(players);
 module.exports.PLAYER_INFO = (player) => playerInfo(player);
-module.exports.SPOT_INFO = (spot) => spotInfo(spot);
+module.exports.SPOT_INFO = (spot, withPayment = true) => spotInfo(spot, withPayment);
 module.exports.OPEN_SPOTS = "Список доступных матчей";
 module.exports.CREATE_SPOT = "Создать матч";
 module.exports.USER_ERROR_MSG = "Что-то пошло не так, попробуйте еще раз!";
