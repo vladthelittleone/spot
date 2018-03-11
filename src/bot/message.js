@@ -19,8 +19,8 @@ const spotInfo = (spot) => {
   str += `Цена: *${price}*\n`;
   str += `Необходимо: *${count}* человек\n`;
   str += `Собрано: *${players.length}* человек\n`;
-  str += locationText ? `Адрес: *${locationText}*` : '';
-  str += `Доп. инф об оплате: ${paymentInfo}` ;
+  str += locationText ? `Адрес: *${locationText}* \n` : '';
+  str += `Оплата: ${paymentInfo}` ;
   return str;
 };
 
