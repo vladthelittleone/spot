@@ -9,20 +9,24 @@ class Components {
     return chatId && bot.telegram.sendLocation(chatId, latitude, longitude);
   }
 
-  static sendMatch (ctx, spot) {
+  static async sendMatch (ctx, spot, withLocation = true, withPayment = true) {
     if (!spot) return ctx.replyWithMarkdown(message.GROUP_DONT_HAVE_ACTIVE_SPOT);
 
-    if (spot.location) {
-      this.sendLocation(ctx.chat.id, spot.location)
-          .then(() => this.sendSpotInfo(ctx, spot));
+    if (withLocation && spot.location) {
+      await this.sendLocation(ctx.chat.id, spot.location);
+      await this.sendSpotInfo(ctx, spot, withPayment);
     } else {
-      this.sendSpotInfo(ctx, spot);
+      await this.sendSpotInfo(ctx, spot, withPayment);
     }
   }
 
-  static sendSpotInfo (ctx, spot) {
+  static sendPlayers (ctx, players) {
+    ctx.replyWithMarkdown(message.PLAYERS_LIST(players));
+  }
+
+  static sendSpotInfo (ctx, spot, withPayment = true) {
     ctx.replyWithMarkdown(
-      message.SPOT_INFO(spot),
+      message.SPOT_INFO(spot, withPayment),
       Markup.inlineKeyboard([Markup.callbackButton("Добавиться", `add ${spot.hash}`)])
             .extra()
     );
@@ -31,7 +35,7 @@ class Components {
   static cancelSceneKeyboard (ctx) {
     ctx.reply("Вы можете отменить создание матча на клавиатуре", Markup.keyboard([
       [message.CANCEL]
-    ]));
+    ]).resize().extra());
   }
 
   static mainKeyboard (ctx) {

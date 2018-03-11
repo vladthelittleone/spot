@@ -18,6 +18,7 @@ let schema = new Schema({
   groupId:      String,
   groupTitle:   String,
   players:      Array,
+  metro:        String,
   notifyStatus: {
     type:    String,
     enum:    [
@@ -141,6 +142,7 @@ Spot.create = async (spot) => {
     count:        spot.count, // insert max human at spot
     paymentInfo:  spot.paymentInfo,
     created:      Date.now(),
+    metro:        spot.metro,
     players:      []
   });
   return await group.save();
