@@ -26,23 +26,29 @@ const spotInfo = (spot) => {
   return str;
 };
 
-const playerInfo = (index, player) => {
+const playerInfo = (player) => {
   let str = "";
-  str += `${index + 1}. `;
-  if (player.first_name) { str += `${player.first_name} ` }
-  if (player.last_name) { str += player.last_name }
+  if (player.first_name) {
+    str += `${player.first_name} `;
+  }
+  if (player.last_name) {
+    str += player.last_name;
+  }
   return str;
 };
 
 const playersList = (players) => {
   let str = "";
   lodash.forEach(players, (player, index) => {
-    str += playerInfo(index, player);
+    str += `${index + 1}. `;
+    str += playerInfo(player);
+    str += "\n";
   });
   return str;
 };
 
 module.exports.PLAYERS_LIST = (players) => playersList(players);
+module.exports.PLAYER_INFO = (player) => playerInfo(player);
 module.exports.SPOT_INFO = (spot) => spotInfo(spot);
 module.exports.OPEN_SPOTS = "Список доступных матчей";
 module.exports.CREATE_SPOT = "Создать матч";

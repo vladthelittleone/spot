@@ -75,7 +75,7 @@ module.exports = (bot) => {
       const spot = await SpotModel.addPlayer(hash, from);
       if (spot) {
         let str = '';
-        str += `${from.first_name} ${from.last_name} пойдет на матч.\n`;
+        str += `${message.PLAYER_INFO(from)} пойдет на матч.\n`;
         str += `👍 ${spot.players.length + 1} / ${spot.count}`;
         bot.telegram.sendMessage(groupId, str);
       }
@@ -96,7 +96,7 @@ module.exports = (bot) => {
         );
       } else {
         ctx.reply(message.SPOT_ALREADY_ACTIVE);
-        Components.sendMatch(ctx, currentSpot);
+        await Components.sendMatch(ctx, currentSpot);
       }
     }
   });
