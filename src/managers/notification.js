@@ -6,7 +6,7 @@ const message = require("../bot/message");
 
 class NotificationJob {
   static async execute () {
-    const spots = await SpotModel.getOpenSpots();
+    const spots = await SpotModel.getSpots();
     for (const spot of spots) {
       const {spotTime, notifyStatus} = spot;
       const diff = moment(spotTime, moment.ISO_8601).diff(moment(), "hours");

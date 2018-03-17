@@ -29,10 +29,10 @@ const spotInfo = (spot, withPayment = true) => {
 const playerInfo = (player) => {
   let str = "";
   if (player.first_name) {
-    str += `${player.first_name} `;
+    str += player.first_name;
   }
   if (player.last_name) {
-    str += player.last_name;
+    str += ` ${player.last_name}`;
   }
   return str;
 };

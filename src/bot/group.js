@@ -85,10 +85,9 @@ module.exports = (bot) => {
       const hash = match[1];
       const currentSpot = await SpotModel.getCurrentSpot(from.id);
       spots[from.id] = await SpotModel.getByHash(hash);
-
       if (!currentSpot) {
         return ctx.replyWithMarkdown(
-          "Чтобы добавления вас в матч, необходимо отправить ваш телефонный номер создателю матча.\n" +
+          "Чтобы добавить вас в матч, необходимо отправить ваш телефонный номер создателю матча.\n" +
           "Нажмите на кнопку *\"Отправить контакт\"*, если согласны.",
           Markup.keyboard([
             Markup.contactRequestButton("Отправить контакт")
