@@ -11,8 +11,10 @@ const notifyMessage = (spot, interval) => {
   return str;
 };
 
+
 const spotInfo = (spot, withPayment = true) => {
   const {sportType, metro, spotTime, price, count, players, groupTitle, paymentInfo, locationText} = spot;
+  
   let str = "";
   str += `Спорт: *${sportType}*\n`;
   str += groupTitle ? `Группа: *${groupTitle}*\n` : '';
