@@ -62,7 +62,7 @@ module.exports = (bot) => {
     }
 
     let str = '';
-    str += `${from.first_name} ${from.last_name} вышел из матча.\n`;
+    str += `${message.PLAYER_INFO(from)} вышел из матча.\n`;
     str += `👎 ${updated.players.length} / ${updated.count}`;
 
     bot.telegram.sendMessage(updated.groupId, str);
