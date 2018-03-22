@@ -12,9 +12,7 @@ class NotificationJob {
       const diff = moment(spotTime, moment.ISO_8601).diff(moment(), "hours");
       const is24hBeforeMatch = diff <= 24 && diff >= 0;
       const is1hBeforeMatch = diff <= 1 && diff >= 0;
-      if (diff <= -1) {
-        await SpotModel.removeSpot(spot.hash);
-      } else if (is24hBeforeMatch && notifyStatus === NOTIFY_STATUS.NOT_YET_NOTIFIED) {
+      if (is24hBeforeMatch && notifyStatus === NOTIFY_STATUS.NOT_YET_NOTIFIED) {
         await notify(
           spot,
           message.NOTIFIED_ONE_DAY_BEFORE(spot),
