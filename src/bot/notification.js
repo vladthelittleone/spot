@@ -7,11 +7,7 @@ const send = async (chat, text) => {
 };
 
 const notify = async (spot, message, nextStatus) => {
-  const {players, groupId, location, fromId} = spot;
-  for (const player of players) {
-    location && await Components.sendLocation(player.id, location);
-    await send(player.id, message);
-  }
+  const {groupId, location, fromId} = spot;
   location && await Components.sendLocation(groupId, location);
   await send(groupId, message);
   await Spot.updateNotifyStatus(fromId, nextStatus);

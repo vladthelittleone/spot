@@ -18,7 +18,8 @@ if (process.env.NODE_ENV === 'dev') {
     const start = new Date();
     await next();
     const ms = new Date() - start;
-    logger.info(`message: [ ${ctx.update.message.text} ] response time [ ${ms}ms ]`);
+    const text = !!ctx.update.message;
+    text && logger.info(`message: [ ${ctx.update.message.text} ] response time [ ${ms}ms ]`);
   });
 }
 
