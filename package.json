@@ -6,7 +6,7 @@
     "node": ">=8.6.0"
   },
   "scripts": {
-    "pm2": "pm2 start ./src/config/pm2.json",
+    "pro": "NODE_PATH=./src NODE_ENV=pro node ./src/app.js",
     "dev": "NODE_PATH=./src NODE_ENV=dev node ./src/app.js",
     "watch": "./node_modules/.bin/esw --watch",
     "lint": "./node_modules/.bin/esw",
@@ -18,7 +18,6 @@
     "mongo": "^0.1.0",
     "mongoose": "^5.0.1",
     "nconf": "^0.10.0",
-    "pm2": "^2.9.2",
     "telegraf": "^3.17.7",
     "winston": "^2.4.0"
   },

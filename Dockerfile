@@ -8,4 +8,4 @@ run npm i --only=production
 
 copy . /usr/src/bot
 
-cmd ["npm", "run", "pm2"]
+cmd ["npm", "run", "pro"]
