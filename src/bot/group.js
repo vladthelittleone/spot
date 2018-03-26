@@ -1,7 +1,3 @@
-/**
- * here execute logic with group
- */
-
 const SpotModel = require("../models/spot");
 const Components = require("./components");
 const message = require('./message');

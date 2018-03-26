@@ -1,7 +1,3 @@
-/**
- * here execute logic with user
- */
-
 const Stage = require("telegraf/stage");
 const WizardScene = require("telegraf/scenes/wizard");
 const Components = require("./components");

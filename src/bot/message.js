@@ -1,7 +1,7 @@
 const moment = require('moment');
 const lodash = require('lodash');
 
-const getIntervalHours = (interval) => interval === 'day' ? '24 часа' : '1 час';
+const getIntervalHours = (interval) => interval === 'day' ? '24 часа' : '2 часа';
 const getDate = (date) => moment(date).format("DD.MM.YY h:mm a");
 
 const notifyMessage = (spot, interval) => {
@@ -53,7 +53,7 @@ module.exports.SPOT_INFO = (spot, withPayment = true) => spotInfo(spot, withPaym
 module.exports.OPEN_SPOTS = "Список доступных матчей";
 module.exports.CREATE_SPOT = "Создать матч";
 module.exports.USER_ERROR_MSG = "Что-то пошло не так, попробуйте еще раз!";
-module.exports.NOTIFIED_ONE_HOUR_BEFORE = (spot) => notifyMessage(spot, 'hour');
+module.exports.NOTIFIED_TWO_HOUR_BEFORE = (spot) => notifyMessage(spot, 'hour');
 module.exports.NOTIFIED_ONE_DAY_BEFORE = (spot) => notifyMessage(spot, 'day');
 module.exports.NEW_SPOT_IS_CREATED = "Создан новый матч";
 module.exports.INSERT_SPOT_DATE = "Введите дату проведения матча в формате: *01.01.14 14:40*";

@@ -1,7 +1,7 @@
 const winston = require("winston");
 
 // can be much more flexible than that O_o
-const getLogger = (module) => {
+const logger = (module) => {
   let path = module.filename.split("/").slice(-2).join("/");
 
   return new winston.Logger({
@@ -16,4 +16,4 @@ const getLogger = (module) => {
   });
 };
 
-module.exports = getLogger;
+module.exports = logger;
