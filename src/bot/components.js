@@ -6,7 +6,7 @@ const lodash = require("lodash");
 class Components {
   static sendLocation (chatId, location) {
     const {latitude, longitude} = location;
-    chatId && bot.telegram.sendLocation(chatId, latitude, longitude);
+    return chatId && bot.telegram.sendLocation(chatId, latitude, longitude);
   }
 
   static async sendMatch (ctx, spot, withLocation = true, withPayment = true) {
