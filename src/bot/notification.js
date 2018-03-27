@@ -1,5 +1,5 @@
 const bot = require("./index");
-const Spot = require('../models/spot');
+const models = require('../models');
 const Components = require('./components');
 
 const send = async (chat, text) => {
@@ -10,7 +10,7 @@ const notify = async (spot, message, nextStatus) => {
   const {groupId, location, fromId} = spot;
   location && await Components.sendLocation(groupId, location);
   await send(groupId, message);
-  await Spot.updateNotifyStatus(fromId, nextStatus);
+  await models.Spot.updateNotifyStatus(fromId, nextStatus);
 };
 
 const notifyAboutMatchIsOver = async (groupId, message) => {

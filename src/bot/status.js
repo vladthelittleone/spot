@@ -10,5 +10,4 @@ const NOTIFY_STATUS = {
   "NOT_YET_NOTIFIED":         "NOT_YET_NOTIFIED"
 };
 
-module.exports.NOTIFY_STATUS = NOTIFY_STATUS;
-module.exports.SPOT_STATUS = SPOT_STATUS;
+module.exports = {NOTIFY_STATUS, SPOT_STATUS};

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const config = require("../../config");
-const logger = require("../log")(module);
+const config = require("../config");
+const logger = require("./log")(module);
 
 // flag for set test mongo uri
 mongoose.set(

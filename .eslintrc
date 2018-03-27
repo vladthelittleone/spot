@@ -8,6 +8,10 @@
   ],
   "rules": {
     "no-mixed-spaces-and-tabs": "warn",
+    "semi": [
+      "warn",
+      "always"
+    ],
     "node/exports-style": [
       "error",
       "module.exports"

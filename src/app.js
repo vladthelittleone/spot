@@ -1,7 +1,6 @@
-require("./bot");
+require("./bot").bot;
 
-const manager = require("./managers");
-const NotificationJob = require("./managers/notification");
-const CleanJob = require('./managers/cleaner');
-manager.start(NotificationJob);
-manager.start(CleanJob);
+const managers = require("./managers");
+
+managers.JobManager.start(managers.NotificationJob);
+managers.JobManager.start(managers.CleanJob);

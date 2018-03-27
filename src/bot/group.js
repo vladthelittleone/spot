@@ -1,4 +1,4 @@
-const SpotModel = require("../models/spot");
+const models = require("../models");
 const Components = require("./components");
 const message = require('./message');
 const Markup = require("telegraf/markup");
@@ -10,11 +10,11 @@ module.exports = (bot) => {
     if (ctx.chat.type === "group") {
       const {match} = ctx;
       const hash = match[1];
-      const spot = await SpotModel.getByHash(hash);
+      const spot = await models.Spot.getByHash(hash);
       if (spot) {
-        await SpotModel.addGroup(hash, ctx.chat.id, ctx.chat.title);
+        await models.Spot.addGroup(hash, ctx.chat.id, ctx.chat.title);
         ctx.reply(message.NEW_SPOT_IS_CREATED)
-           .then(() => Components.sendMatch(ctx, spot));
+          .then(() => Components.sendMatch(ctx, spot));
       }
     }
   });
@@ -38,25 +38,25 @@ module.exports = (bot) => {
 
   bot.command(`/next@SpotBBot`, async (ctx) => {
     const groupId = ctx.update.message.chat.id;
-    const spot = await SpotModel.getSpotByGroupId(groupId);
+    const spot = await models.Spot.getSpotByGroupId(groupId);
     Components.sendMatch(ctx, spot);
   });
 
   bot.command(`/members@SpotBBot`, async (ctx) => {
     const groupId = ctx.update.message.chat.id;
-    const spot = await SpotModel.getSpotByGroupId(groupId);
+    const spot = await models.Spot.getSpotByGroupId(groupId);
     Components.sendPlayers(ctx, spot.players);
   });
 
   bot.command('/remove@SpotBBot', async (ctx) => {
     const groupId = ctx.update.message.chat.id;
-    const spot = await SpotModel.getSpotByGroupId(groupId);
+    const spot = await models.Spot.getSpotByGroupId(groupId);
     const admins = await ctx.getChatAdministrators();
     if (!admins.find((admin) => admin.user.id === ctx.from.id)) {
       return ctx.replyWithMarkdown(message.YOU_ARE_NOT_ADMIN(ctx.from.first_name));
     }
     if (spot) {
-      await SpotModel.removeSpot(spot.hash);
+      await models.Spot.removeSpot(spot.hash);
       ctx.replyWithMarkdown(message.CURRENT_SPOT_HAS_BEEN_REMOVED);
     } else {
       ctx.replyWithMarkdown(message.GROUP_DONT_HAVE_ACTIVE_SPOT);
@@ -68,7 +68,7 @@ module.exports = (bot) => {
       const {match, from} = ctx;
       const groupId = ctx.chat.id;
       const hash = match[1];
-      const spot = await SpotModel.addPlayer(hash, from);
+      const spot = await models.Spot.addPlayer(hash, from);
       if (spot) {
         let str = '';
         str += `${message.PLAYER_INFO(from)} пойдет на матч.\n`;
@@ -79,8 +79,8 @@ module.exports = (bot) => {
     if (ctx.chat.type === "private") {
       const {match, from} = ctx;
       const hash = match[1];
-      const currentSpot = await SpotModel.getCurrentSpot(from.id);
-      spots[from.id] = await SpotModel.getByHash(hash);
+      const currentSpot = await models.Spot.getCurrentSpot(from.id);
+      spots[from.id] = await models.Spot.getByHash(hash);
       if (!currentSpot) {
         return ctx.replyWithMarkdown(
           "Чтобы добавить вас в матч, необходимо отправить ваш телефонный номер создателю матча.\n" +

@@ -1,4 +1,4 @@
-const bot = require("./index");
+const bot = require("./bot");
 const Markup = require("telegraf/markup");
 const message = require("./message");
 const lodash = require("lodash");

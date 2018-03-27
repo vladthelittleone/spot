@@ -2,7 +2,7 @@ const Stage = require("telegraf/stage");
 const WizardScene = require("telegraf/scenes/wizard");
 const Components = require("./components");
 const Markup = require("telegraf/markup");
-const SpotModel = require("../models/spot");
+const models = require("../models");
 const {SPORT_TYPES} = require('./types');
 const session = require("telegraf/session");
 const lodash = require("lodash");
@@ -35,26 +35,26 @@ module.exports = (bot) => {
   bot.hears(message.REMOVE_ACTIVE_SPOT, async (ctx) => {
     const {from} = ctx;
 
-    const spot = await SpotModel.getCurrentSpot(from.id);
+    const spot = await models.Spot.getCurrentSpot(from.id);
     if (!spot) {
       ctx.reply(message.NO_ACTIVE_SPOT);
       return;
     }
     if (spot.fromId === from.id && spot.players.length === 1) {
-      await SpotModel.removeSpot(spot.hash);
+      await models.Spot.removeSpot(spot.hash);
       ctx.reply(message.MATCH_REMOVE_SUCCESS);
       spot.groupId &&
-      bot.telegram.sendMessage(spot.groupId, message.CURRENT_SPOT_HAS_BEEN_REMOVED);
+        bot.telegram.sendMessage(spot.groupId, message.CURRENT_SPOT_HAS_BEEN_REMOVED);
       return;
     }
 
-    const updated = await SpotModel.removePlayer(spot.hash, from);
+    const updated = await models.Spot.removePlayer(spot.hash, from);
 
     ctx.reply(message.PLAYER_REMOVE_SUCCESS);
 
     if (updated.fromId === from.id) {
       const randomPlayer = updated.players[0];
-      await SpotModel.updateSpotFromId(updated.fromId, randomPlayer.id);
+      await models.Spot.updateSpotFromId(updated.fromId, randomPlayer.id);
     }
 
     let str = '';
@@ -65,7 +65,7 @@ module.exports = (bot) => {
   });
 
   bot.hears(message.OPEN_SPOTS, async (ctx) => {
-    const spots = await SpotModel.getOpenSpots();
+    const spots = await models.Spot.getOpenSpots();
     if (!spots.length) {
       ctx.reply(message.NO_ACTIVE_SPOTS);
     } else {
@@ -80,7 +80,7 @@ module.exports = (bot) => {
   });
 
   bot.hears(message.CREATE_SPOT, async (ctx) => {
-    const spot = await SpotModel.getByFromId(ctx.from.id);
+    const spot = await models.Spot.getByFromId(ctx.from.id);
     if (!spot) {
       ctx.scene.enter("create");
     } else {
@@ -91,7 +91,7 @@ module.exports = (bot) => {
 
   bot.hears(message.CURRENT_SPOT, async (ctx) => {
     const {from} = ctx;
-    const spot = await SpotModel.getCurrentSpot(from.id);
+    const spot = await models.Spot.getCurrentSpot(from.id);
     if (spot) {
       await Components.sendMatch(ctx, spot);
     } else {
@@ -100,7 +100,7 @@ module.exports = (bot) => {
   });
 };
 
-function createScene () {
+function createScene() {
   return new WizardScene(
     "create",
 
@@ -217,8 +217,8 @@ function createScene () {
       spots[id].paymentInfo = ctx.message.text;
 
       try {
-        await SpotModel.create(spots[id]);
-        await SpotModel.addPlayer(spots[id].hash, from);
+        await models.Spot.create(spots[id]);
+        await models.Spot.addPlayer(spots[id].hash, from);
         ctx.reply(
           message.SPOT_HAS_BEEN_CREATEED,
           Markup.inlineKeyboard([

@@ -1,10 +1,12 @@
-const mongoose = require("../utils/mongoose");
-const {NOTIFY_STATUS, SPOT_STATUS} = require("../bot/status");
+const utils = require("../utils");
+// import '../bot/status' instead of '../bot' becouse starting before than
+const status = require("../bot/status");
 const lodash = require("lodash");
 
-const Schema = mongoose.Schema;
+const NOTIFY_STATUS = status.NOTIFY_STATUS;
+const SPOT_STATUS = status.SPOT_STATUS;
 
-let schema = new Schema({
+let schema = new utils.mongoose.Schema({
   fromId:       Number,
   count:        Number,
   created:      Date,
@@ -39,7 +41,7 @@ let schema = new Schema({
   }
 });
 
-const Spot = mongoose.model("spot", schema);
+const Spot = utils.mongoose.model("spot", schema);
 
 Spot.removeSpot = async (hash) => {
   return await Spot.findOneAndRemove({hash: hash});
