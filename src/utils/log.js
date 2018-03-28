@@ -7,9 +7,9 @@ const logger = (module) => {
   return new winston.Logger({
     transports: [
       new winston.transports.Console({
-        colorize:    true,
-        level:       "debug",
-        label:       path,
+        colorize: true,
+        level: "debug",
+        label: path,
         prettyPrint: true
       })
     ]

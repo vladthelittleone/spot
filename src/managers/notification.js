@@ -2,7 +2,7 @@ const models = require("../models");
 const moment = require("moment");
 const bot = require("../bot");
 
-const NOTIFY_STATUS = bot.status.NOTIFY_STATUS;
+const NOTIFY_STATUS = bot.types.NOTIFY_STATUS;
 
 class NotificationJob {
   static async execute() {
@@ -10,8 +10,8 @@ class NotificationJob {
     for (const spot of spots) {
       const {notifyStatus} = spot;
       const diff = moment(spot.spotTime, moment.ISO_8601).diff(moment(), "hours");
-      const is24hBeforeMatch = diff === 24;
-      const is2hBeforeMatch = diff === 2;
+      const is24hBeforeMatch = diff <= 25 && diff >= 23;
+      const is2hBeforeMatch = diff <= 2 && diff >= 0;
       if (is24hBeforeMatch && notifyStatus !== NOTIFY_STATUS.NOTIFIED_ONE_DAY_BEFORE) {
         await bot.notification.notify(
           spot,

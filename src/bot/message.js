@@ -11,18 +11,17 @@ const notifyMessage = (spot, interval) => {
   return str;
 };
 
-const spotInfo = (spot, withPayment = true) => {
+const spotInfo = (spot, forFind) => {
   const {sportType, metro, spotTime, price, count, players, groupTitle, paymentInfo, locationText} = spot;
   let str = "";
-  str += `Спорт: *${sportType}*\n`;
-  str += groupTitle ? `Группа: *${groupTitle}*\n` : '';
+  str += !forFind ? `Спорт: *${sportType}*\n` : '';
+  str += !forFind && groupTitle ? `Группа: *${groupTitle}*\n` : '';
   str += `Дата: *${getDate(spotTime)}*\n`;
-  str += `Метро: *${metro}*\n`;
+  str += !forFind && `Метро: *${metro}*\n`;
   str += `Цена: *${price}*\n`;
-  str += `Необходимо: *${count}* человек\n`;
-  str += `Собрано: *${players.length}* человек\n`;
-  str += withPayment ? `Оплата: *${paymentInfo}*\n` : '';
-  str += locationText ? `Адрес: *${locationText}*` : '';
+  str += `Состав: *${players.length} / ${count}*\n`;
+  str += !forFind ? `Оплата: *${paymentInfo}*\n` : '';
+  str += !forFind && locationText ? `Адрес: *${locationText}*` : '';
   return str;
 };
 
@@ -47,11 +46,15 @@ const playersList = (players) => {
   return str;
 };
 
+module.exports.FIND_SPOTS = "🔎 Найти";
+module.exports.CREATE_SPOT = "✏️ Создать";
+module.exports.CURRENT_SPOT = "🎟 Текущий";
+module.exports.REMOVE_ACTIVE_SPOT = "👋🏻 Выйти";
+module.exports.CANCEL = `❌`;
+module.exports.GLOBAL_FIND = "🎰";
 module.exports.PLAYERS_LIST = (players) => playersList(players);
 module.exports.PLAYER_INFO = (player) => playerInfo(player);
-module.exports.SPOT_INFO = (spot, withPayment = true) => spotInfo(spot, withPayment);
-module.exports.OPEN_SPOTS = "Список доступных матчей";
-module.exports.CREATE_SPOT = "Создать матч";
+module.exports.SPOT_INFO = (spot, forFind) => spotInfo(spot, forFind);
 module.exports.USER_ERROR_MSG = "Что-то пошло не так, попробуйте еще раз!";
 module.exports.NOTIFIED_TWO_HOUR_BEFORE = (spot) => notifyMessage(spot, 'hour');
 module.exports.NOTIFIED_ONE_DAY_BEFORE = (spot) => notifyMessage(spot, 'day');
@@ -61,10 +64,7 @@ module.exports.INSERT_SPOT_LOCATION = "Введите место проведе�
 module.exports.INSERT_SPOT_COST = "Введите цену за одного человека";
 module.exports.INSERT_SPOT_MEMBERS = "Введите количество человек";
 module.exports.INSERT_SPOT_PAYMENT_INFO = "Введите доп. информацию по оплате";
-module.exports.INSERT_METRO_STATION = "Введите станцию метро";
 module.exports.NEW_PLAYER_WANTS_TO_ADD = "В текущий матч хочет добавиться игрок";
-module.exports.CURRENT_SPOT = "Ваш текущий матч";
-module.exports.REMOVE_ACTIVE_SPOT = "Удалить ваш текущий матч";
 module.exports.SPOT_ALREADY_CREATED = "Вами уже был создан матч";
 module.exports.NO_ACTIVE_SPOT = "Вы еще не добавились в матч";
 module.exports.CURRENT_SPOT_HAS_BEEN_REMOVED = "Текущий матч был удален";
@@ -79,4 +79,3 @@ module.exports.SPOT_HAS_BEEN_CREATEED = "Матч успешно создан! �
 module.exports.SPOT_IS_OVER = '*Ваш матч начался! Спасибо за использования нашего сервиса!*';
 module.exports.GROUP_DONT_HAVE_ACTIVE_SPOT = '*В данной группе нет активного матча!*';
 module.exports.YOU_ARE_NOT_ADMIN = (name) => `Извините, ${name}, но вы не администратор этой группы`;
-module.exports.CANCEL = `Отмена`;

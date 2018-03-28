@@ -3,31 +3,41 @@ const WizardScene = require("telegraf/scenes/wizard");
 const Components = require("./components");
 const Markup = require("telegraf/markup");
 const models = require("../models");
-const {SPORT_TYPES} = require('./types');
+const types = require('./types');
 const session = require("telegraf/session");
 const lodash = require("lodash");
 const message = require("./message");
 const moment = require("moment");
 
-const spots = {};
-
 module.exports = (bot) => {
 
   // create scene about new spot
-  const create = createScene();
-
+  const createSpotScene = newCreateSpotScene();
   // added command that cancel scene
-  create.hears(message.CANCEL, ctx => {
+  createSpotScene.hears(message.CANCEL, ctx => {
     ctx.scene.leave();
-    delete spots[ctx.from.id]; // delete spot from cache
+    Components.mainKeyboard(ctx);
+  });
+
+  // create scene about find spot  
+  const findSpotScene = newFindSpotScene();
+  findSpotScene.hears(message.CANCEL, ctx => {
+    ctx.scene.leave();
+    Components.mainKeyboard(ctx);
+  });
+
+  const globalFindScene = newGlobalFindScene();
+  globalFindScene.hears(message.CANCEL, ctx => {
+    ctx.scene.leave();
     Components.mainKeyboard(ctx);
   });
 
   // create scene manager
   const stage = new Stage();
-
   // scene registration
-  stage.register(create);
+  stage.register(globalFindScene);
+  stage.register(createSpotScene);
+  stage.register(findSpotScene);
 
   bot.use(session());
   bot.use(stage.middleware());
@@ -40,11 +50,14 @@ module.exports = (bot) => {
       ctx.reply(message.NO_ACTIVE_SPOT);
       return;
     }
+
     if (spot.fromId === from.id && spot.players.length === 1) {
       await models.Spot.removeSpot(spot.hash);
       ctx.reply(message.MATCH_REMOVE_SUCCESS);
-      spot.groupId &&
-        bot.telegram.sendMessage(spot.groupId, message.CURRENT_SPOT_HAS_BEEN_REMOVED);
+      spot.groupId && bot.telegram.sendMessage(
+        spot.groupId,
+        message.CURRENT_SPOT_HAS_BEEN_REMOVED
+      );
       return;
     }
 
@@ -61,19 +74,12 @@ module.exports = (bot) => {
     str += `${message.PLAYER_INFO(from)} вышел из матча.\n`;
     str += `👎 ${updated.players.length} / ${updated.count}`;
 
-    bot.telegram.sendMessage(updated.groupId, str);
+    updated.groupId && bot.telegram.sendMessage(updated.groupId, str);
   });
 
-  bot.hears(message.OPEN_SPOTS, async (ctx) => {
-    const spots = await models.Spot.getOpenSpots();
-    if (!spots.length) {
-      ctx.reply(message.NO_ACTIVE_SPOTS);
-    } else {
-      for (const spot of spots) {
-        await Components.sendMatch(ctx, spot, false, false);
-      }
-    }
-  });
+  bot.hears(message.GLOBAL_FIND, ctx => ctx.scene.enter('global find'));
+
+  bot.hears(message.FIND_SPOTS, ctx => ctx.scene.enter('find'));
 
   bot.hears(message.CANCEL, ctx => {
     Components.mainKeyboard(ctx);
@@ -100,7 +106,94 @@ module.exports = (bot) => {
   });
 };
 
-function createScene() {
+function newGlobalFindScene() {
+  return new WizardScene(
+    'global find',
+
+    async ctx => {
+      await Components.cancelSceneKeyboard(ctx);
+      await Components.sportTypesKeyboard(ctx);
+      return ctx.wizard.next();
+    },
+
+    async ctx => {
+      const sport = ctx.callbackQuery && ctx.callbackQuery.data;
+      if (sport && lodash.includes(types.SPORT_TYPES, sport)) {
+        const spots = await models.Spot.findBySport(sport);
+        if (spots.length) {
+          for (const spot of spots) {
+            await Components.sendMatch(ctx, spot, true);
+          }
+        } else {
+          ctx.replyWithMarkdown(`По ${sport} нет матчей`);
+        }
+        await Components.mainKeyboard(ctx);
+        return ctx.scene.leave();
+      } else {
+        await ctx.reply(message.USER_ERROR_MSG);
+        await Components.sportTypesKeyboard(ctx);
+      }
+    }
+  );
+}
+
+function newFindSpotScene() {
+  return new WizardScene(
+    'find',
+
+    async ctx => {
+      await Components.cancelSceneKeyboard(ctx);
+      await Components.sportTypesKeyboard(ctx);
+      return ctx.wizard.next();
+    },
+
+    async ctx => {
+      const sport = ctx.callbackQuery && ctx.callbackQuery.data;
+      if (sport && lodash.includes(types.SPORT_TYPES, sport)) {
+        ctx.scene.session.sport = sport;
+        await Components.spbMetroTreesKeboard(ctx);
+        return ctx.wizard.next();
+      } else {
+        await ctx.reply(message.USER_ERROR_MSG);
+        await Components.sportTypesKeyboard(ctx);
+      }
+    },
+
+    async ctx => {
+      const tree = ctx.callbackQuery && ctx.callbackQuery.data;
+      if (tree && lodash.includes(types.SPB_METRO_TREES, tree)) {
+        ctx.scene.session.tree = tree;
+        await Components.metroStationsKeyboard(ctx, tree);
+        return ctx.wizard.next();
+      } else {
+        await ctx.reply(message.USER_ERROR_MSG);
+        await Components.spbMetroTreesKeboard(ctx);
+      }
+    },
+
+    async ctx => {
+      const station = ctx.callbackQuery && ctx.callbackQuery.data;
+      const {sport, tree} = ctx.scene.session;
+      if (station && lodash.includes(types.SPB_METRO_STATIONS_BY_TREE[tree], station)) {
+        const spots = await models.Spot.findByMetroAndSport(station, sport);
+        if (spots.length) {
+          for (const spot of spots) {
+            await Components.sendMatch(ctx, spot, true);
+          }
+        } else {
+          ctx.replyWithMarkdown(`На *${station}* нет ${sport} матчей`);
+        }
+        await Components.mainKeyboard(ctx);
+        return ctx.scene.leave();
+      } else {
+        await ctx.reply(message.USER_ERROR_MSG);
+        await Components.metroStationsKeyboard(ctx);
+      }
+    }
+  );
+}
+
+function newCreateSpotScene() {
   return new WizardScene(
     "create",
 
@@ -108,10 +201,9 @@ function createScene() {
      * initialize spot
      */
     (ctx) => {
-      const fromId = ctx.from.id;
-      spots[ctx.from.id] = {fromId}; // initialize new spot at cache
       Components.cancelSceneKeyboard(ctx);
-      Components.sportTypesKeyboard(ctx, SPORT_TYPES);
+      Components.sportTypesKeyboard(ctx);
+      ctx.scene.session.spot = {fromId: ctx.from.id};
       return ctx.wizard.next();
     },
 
@@ -121,12 +213,12 @@ function createScene() {
     async (ctx) => {
       const replyError = async (ctx) => {
         await ctx.reply(message.USER_ERROR_MSG);
-        Components.sportTypesKeyboard(ctx, SPORT_TYPES);
+        Components.sportTypesKeyboard(ctx);
       };
 
       const type = ctx.callbackQuery && ctx.callbackQuery.data;
-      if (type && lodash.includes(SPORT_TYPES, type)) {
-        spots[ctx.from.id].sportType = ctx.callbackQuery.data;
+      if (type && lodash.includes(types.SPORT_TYPES, type)) {
+        ctx.scene.session.spot.sportType = type;
         ctx.replyWithMarkdown(message.INSERT_SPOT_DATE);
         return ctx.wizard.next();
       } else {
@@ -137,14 +229,14 @@ function createScene() {
     /**
      * insert spot time
      */
-    (ctx) => {
+    async (ctx) => {
       const time = moment(ctx.message.text, "DD.MM.YY HH:mm", true);
       if (time.isValid()) {
         if (time.diff(moment()) < 0) {
           ctx.reply(message.CANNOT_USE_PAST_TIME);
         } else {
-          spots[ctx.from.id].spotTime = time.toISOString();
-          ctx.replyWithMarkdown(message.INSERT_METRO_STATION);
+          ctx.scene.session.spot.spotTime = time.toISOString();
+          await Components.spbMetroTreesKeboard(ctx);
           return ctx.wizard.next();
         }
       } else {
@@ -152,26 +244,50 @@ function createScene() {
       }
     },
 
+    async ctx => {
+      const tree = ctx.callbackQuery && ctx.callbackQuery.data;
+      if (tree && lodash.includes(types.SPB_METRO_TREES, tree)) {
+        ctx.scene.session.tree = tree;
+        await Components.metroStationsKeyboard(ctx, tree);
+        return ctx.wizard.next();
+      } else {
+        await ctx.reply(message.USER_ERROR_MSG);
+        await Components.spbMetroTreesKeboard(ctx);
+      }
+    },
+
     /**
      * enter metro station
      */
-    (ctx) => {
-      spots[ctx.from.id].metro = ctx.message.text;
-      ctx.replyWithMarkdown(message.INSERT_SPOT_LOCATION);
-      return ctx.wizard.next();
+    async ctx => {
+      const station = ctx.callbackQuery && ctx.callbackQuery.data;
+      const {tree} = ctx.scene.session;
+      if (station && lodash.includes(types.SPB_METRO_STATIONS_BY_TREE[tree], station)) {
+        ctx.scene.session.spot.metro = station;
+        ctx.replyWithMarkdown(message.INSERT_SPOT_LOCATION);
+        return ctx.wizard.next();
+      } else {
+        await ctx.reply(message.USER_ERROR_MSG);
+        await Components.metroStationsKeyboard(ctx);
+      }
     },
 
     /**
      * insert or upload location
      */
-    (ctx) => {
-      if (ctx.message.location) {
-        spots[ctx.from.id].location = ctx.message.location;
+    async ctx => {
+      if (ctx.message) {
+        if (ctx.message.location) {
+          ctx.scene.session.spot.location = ctx.message.location;
+        } else {
+          ctx.scene.session.spot.locationText = ctx.message.text;
+        }
+        ctx.reply(message.INSERT_SPOT_COST);
+        return ctx.wizard.next();
       } else {
-        spots[ctx.from.id].locationText = ctx.message.text;
+        await ctx.reply(message.USER_ERROR_MSG);
+        ctx.replyWithMarkdown(message.INSERT_SPOT_LOCATION);
       }
-      ctx.reply(message.INSERT_SPOT_COST);
-      return ctx.wizard.next();
     },
 
     /**
@@ -181,7 +297,7 @@ function createScene() {
       const {text} = ctx.message;
       const cost = Number.parseInt(text, 10);
       if (!isNaN(cost)) {
-        spots[ctx.from.id].price = ctx.message.text;
+        ctx.scene.session.spot.price = ctx.message.text;
         ctx.reply(message.INSERT_SPOT_MEMBERS);
         return ctx.wizard.next();
       } else {
@@ -196,7 +312,7 @@ function createScene() {
       const {text} = ctx.message;
       const count = Number.parseInt(text, 10);
       if (!isNaN(count) && count > 0) {
-        spots[ctx.from.id].count = count;
+        ctx.scene.session.spot.count = count;
         ctx.reply(message.INSERT_SPOT_PAYMENT_INFO);
         return ctx.wizard.next();
       } else if (count === 1) {
@@ -213,24 +329,25 @@ function createScene() {
       const {from} = ctx;
       const {id} = from;
 
-      spots[id].hash = id ^ moment();
-      spots[id].paymentInfo = ctx.message.text;
+      ctx.scene.session.spot.hash = id ^ moment();
+      ctx.scene.session.spot.paymentInfo = ctx.message.text;
+
+      const {spot} = ctx.scene.session;
 
       try {
-        await models.Spot.create(spots[id]);
-        await models.Spot.addPlayer(spots[id].hash, from);
+        await models.Spot.create(spot);
+        await models.Spot.addPlayer(spot.hash, from);
         ctx.reply(
           message.SPOT_HAS_BEEN_CREATEED,
           Markup.inlineKeyboard([
             Markup.urlButton(
               "Выбрать группу",
-              `https://telegram.me/SpotBBot?startgroup=${spots[id].hash}`
+              `https://telegram.me/SpotBBot?startgroup=${spot.hash}`
             )
           ]).extra()
         );
 
         Components.mainKeyboard(ctx);
-        delete spots[id]; // delete spot from cache
         return ctx.scene.leave();
       } catch (e) {
         ctx.reply(message.USER_ERROR_MSG);

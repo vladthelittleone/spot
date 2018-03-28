@@ -1,4 +1,4 @@
-const bot = require("./index");
+const bot = require("./bot");
 const models = require('../models');
 const Components = require('./components');
 

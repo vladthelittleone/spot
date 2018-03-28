@@ -14,7 +14,7 @@ mongoose.set(
 );
 
 let databaseUri = mongoose.get("test") ?
-                  config.get("database:testUri") : config.get("database:uri");
+  config.get("database:testUri") : config.get("database:uri");
 
 const connectPromise = mongoose.connect(
   databaseUri,
